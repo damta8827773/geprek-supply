@@ -12,6 +12,10 @@ export default defineConfig({
   },
   server: {
     port: 5173,
+    // Allow serving files from the monorepo root. `strict: false` also keeps the
+    // dev server working when the project lives in a path with unusual
+    // characters (e.g. spaces or "~").
+    fs: { allow: ['..'], strict: false },
     proxy: {
       // Convenience: lets the client call `/api/*` in dev without CORS juggling.
       '/api': {
