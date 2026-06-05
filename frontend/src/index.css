@@ -1,0 +1,58 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  body {
+    @apply bg-slate-50 text-slate-800 dark:bg-slate-900 dark:text-slate-100;
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  * {
+    transition:
+      background-color 0.3s,
+      border-color 0.3s;
+  }
+}
+
+@layer components {
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 5px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    @apply rounded-full bg-slate-300 dark:bg-slate-600;
+  }
+
+  /* Glass panel used by the sidebar & cards */
+  .glass {
+    @apply border border-white/40 bg-white/80 backdrop-blur-md dark:border-white/10 dark:bg-slate-800/70;
+  }
+}
+
+/* Leaflet overrides */
+.leaflet-container {
+  height: 100%;
+  width: 100%;
+  z-index: 0;
+  background: #e2e8f0;
+}
+.dark .leaflet-container {
+  background: #0f172a;
+}
+.leaflet-bottom.leaflet-right {
+  bottom: 10px;
+  right: 10px;
+}
+
+/* Custom div-icon markers (no default Leaflet image needed) */
+.geprek-marker {
+  background: transparent;
+  border: none;
+}
