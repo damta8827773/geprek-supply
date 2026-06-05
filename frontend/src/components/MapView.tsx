@@ -27,8 +27,9 @@ const centerIcon = divIcon(
 
 function supplierIcon(s: Supplier) {
   const bg = s.inStock ? BRAND : '#ef4444';
+  const pulse = s.inStock ? 'geprek-pulse' : '';
   return divIcon(
-    `<div style="display:flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:9999px;background:${bg};color:#fff;border:2px solid #fff;box-shadow:0 2px 5px rgba(0,0,0,.35)"><i class="fa-solid ${s.icon}" style="font-size:11px"></i></div>`,
+    `<div class="${pulse}" style="display:flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:9999px;background:${bg};color:#fff;border:2px solid #fff;box-shadow:0 2px 5px rgba(0,0,0,.35)"><i class="fa-solid ${s.icon}" style="font-size:11px"></i></div>`,
     26,
   );
 }

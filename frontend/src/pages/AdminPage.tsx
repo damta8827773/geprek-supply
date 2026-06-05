@@ -20,7 +20,7 @@ function LoginCard() {
   };
 
   return (
-    <div className="w-full max-w-sm rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-xl dark:border-slate-700 dark:bg-slate-800">
+    <div className="animate-slide-up w-full max-w-sm rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-xl dark:border-slate-700 dark:bg-slate-800">
       <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-orange-100 text-2xl text-brand dark:bg-orange-900/30">
         <ShieldCheck size={30} />
       </div>
@@ -36,7 +36,7 @@ function LoginCard() {
       />
       <button
         onClick={submit}
-        className="w-full rounded-xl bg-slate-900 py-3 font-bold text-white shadow-lg transition-colors hover:bg-brand"
+        className="press w-full rounded-xl bg-slate-900 py-3 font-bold text-white shadow-lg transition-colors hover:bg-brand hover:shadow-glow"
       >
         {t.adminEnter}
       </button>
@@ -69,7 +69,7 @@ function Dashboard() {
         </div>
         <button
           onClick={logout}
-          className="flex items-center gap-1 rounded-lg bg-red-100 px-3 py-2 text-xs font-bold text-red-600 hover:bg-red-200 dark:bg-red-900/30 dark:text-red-400"
+          className="press flex items-center gap-1 rounded-lg bg-red-100 px-3 py-2 text-xs font-bold text-red-600 hover:bg-red-200 dark:bg-red-900/30 dark:text-red-400"
         >
           <LogOut size={14} /> {t.logout}
         </button>
@@ -85,10 +85,11 @@ function Dashboard() {
                 <MapPin size={14} className="mr-1 inline text-brand" /> {group.name}
               </h3>
               <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
-                {group.suppliers.map((s) => (
+                {group.suppliers.map((s, i) => (
                   <div
                     key={s.id}
-                    className="flex items-center justify-between rounded-xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-800"
+                    style={{ animationDelay: `${i * 50}ms` }}
+                    className="card-hover animate-slide-up flex items-center justify-between rounded-xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-800"
                   >
                     <div>
                       <p className="text-sm font-bold">{s.name}</p>
@@ -98,7 +99,7 @@ function Dashboard() {
                       onClick={() => toggle(s.id, s.inStock)}
                       disabled={setStock.isPending}
                       className={
-                        'flex items-center gap-1 rounded-lg border px-3 py-1.5 text-xs font-bold transition-colors disabled:opacity-50 ' +
+                        'press flex items-center gap-1 rounded-lg border px-3 py-1.5 text-xs font-bold transition-colors disabled:opacity-50 ' +
                         (s.inStock
                           ? 'border-emerald-300 bg-emerald-100 text-emerald-700 dark:border-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400'
                           : 'border-red-300 bg-red-100 text-red-700 dark:border-red-800 dark:bg-red-900/30 dark:text-red-400')

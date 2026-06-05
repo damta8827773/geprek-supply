@@ -38,7 +38,7 @@ export default function RadiusControl({
       <button
         onClick={onSearch}
         disabled={searching}
-        className="mt-2.5 flex w-full items-center justify-center gap-1.5 rounded-lg bg-slate-800 py-2.5 text-xs font-bold text-white shadow transition-colors hover:bg-brand disabled:opacity-80 dark:bg-slate-900 dark:hover:bg-brand"
+        className="press mt-2.5 flex w-full items-center justify-center gap-1.5 rounded-lg bg-slate-800 py-2.5 text-xs font-bold text-white shadow transition-colors hover:bg-brand hover:shadow-glow disabled:opacity-80 dark:bg-slate-900 dark:hover:bg-brand"
       >
         {searching ? (
           <>

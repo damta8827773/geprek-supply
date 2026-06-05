@@ -17,9 +17,9 @@ export default function RegionTabs({ regions, activeKey, onChange }: RegionTabsP
             key={r.key}
             onClick={() => onChange(r.key)}
             className={clsx(
-              'flex-1 rounded-md py-1.5 text-[10px] font-bold uppercase tracking-wide transition-all',
+              'press flex-1 rounded-md py-1.5 text-[10px] font-bold uppercase tracking-wide transition-all',
               active
-                ? 'bg-white text-brand shadow dark:bg-slate-700'
+                ? 'scale-[1.03] bg-white text-brand shadow dark:bg-slate-700'
                 : 'text-slate-500 hover:bg-white/50 dark:text-slate-400 dark:hover:bg-slate-700/50',
             )}
           >

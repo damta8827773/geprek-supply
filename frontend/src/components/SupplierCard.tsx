@@ -13,9 +13,11 @@ const FUEL_COLOR: Record<FuelTier, string> = {
 interface SupplierCardProps {
   supplier: Supplier;
   onSelect: (supplier: Supplier) => void;
+  /** Position in the list — drives the staggered entrance animation. */
+  index?: number;
 }
 
-export default function SupplierCard({ supplier: s, onSelect }: SupplierCardProps) {
+export default function SupplierCard({ supplier: s, onSelect, index = 0 }: SupplierCardProps) {
   const t = useDictionary();
   const fuelLabel =
     s.fuelTier === 'efficient' ? t.fuelEfficient : s.fuelTier === 'normal' ? t.fuelNormal : t.fuelThirsty;
@@ -24,8 +26,9 @@ export default function SupplierCard({ supplier: s, onSelect }: SupplierCardProp
     <button
       type="button"
       onClick={() => onSelect(s)}
+      style={{ animationDelay: `${index * 60}ms` }}
       className={clsx(
-        'block w-full animate-fade-in rounded-xl border bg-white p-3 text-left shadow-sm dark:bg-slate-800',
+        'card-hover animate-slide-up block w-full rounded-xl border bg-white p-3 text-left shadow-sm dark:bg-slate-800',
         s.inStock
           ? 'border-slate-200 hover:border-brand dark:border-slate-700'
           : 'border-red-200 opacity-60 dark:border-red-900',

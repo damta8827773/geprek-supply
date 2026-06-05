@@ -16,7 +16,7 @@ export default function SupplierList({ suppliers, loading, onSelect }: SupplierL
     return (
       <div className="space-y-3 p-3">
         {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} className="h-28 animate-pulse rounded-xl bg-slate-200/70 dark:bg-slate-800" />
+          <div key={i} className="shimmer h-28 rounded-xl bg-slate-200/70 dark:bg-slate-800" />
         ))}
       </div>
     );
@@ -34,8 +34,8 @@ export default function SupplierList({ suppliers, loading, onSelect }: SupplierL
 
   return (
     <div className="space-y-3 p-3">
-      {suppliers.map((s) => (
-        <SupplierCard key={s.id} supplier={s} onSelect={onSelect} />
+      {suppliers.map((s, i) => (
+        <SupplierCard key={s.id} supplier={s} onSelect={onSelect} index={i} />
       ))}
     </div>
   );

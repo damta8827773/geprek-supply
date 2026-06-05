@@ -13,6 +13,22 @@
     @apply bg-slate-50 text-slate-800 dark:bg-slate-900 dark:text-slate-100;
     font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
+    position: relative;
+  }
+
+  /* Subtle animated aurora glow behind everything (brand-tinted, controlled). */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: -20%;
+    z-index: -1;
+    background:
+      radial-gradient(40% 40% at 15% 20%, rgba(234, 88, 12, 0.18), transparent 60%),
+      radial-gradient(45% 45% at 85% 15%, rgba(56, 189, 248, 0.14), transparent 60%),
+      radial-gradient(50% 50% at 70% 85%, rgba(234, 88, 12, 0.12), transparent 60%);
+    filter: blur(40px);
+    animation: aurora 18s ease-in-out infinite alternate;
+    pointer-events: none;
   }
 
   * {
@@ -34,6 +50,92 @@
   .glass {
     @apply border border-white/40 bg-white/80 backdrop-blur-md dark:border-white/10 dark:bg-slate-800/70;
   }
+
+  /* Card hover micro-interaction: lift + brand glow */
+  .card-hover {
+    transition:
+      transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 0.25s ease,
+      border-color 0.25s ease;
+    will-change: transform;
+  }
+  .card-hover:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 30px -10px rgba(234, 88, 12, 0.45);
+  }
+
+  /* Press feedback for interactive controls */
+  .press {
+    transition:
+      transform 0.12s ease,
+      box-shadow 0.2s ease;
+  }
+  .press:hover {
+    transform: translateY(-1px);
+  }
+  .press:active {
+    transform: translateY(1px) scale(0.98);
+  }
+}
+
+/* ---------- Keyframes ---------- */
+@keyframes aurora {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(2%, -2%, 0) scale(1.08);
+  }
+  100% {
+    transform: translate3d(-2%, 2%, 0) scale(1.04);
+  }
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes marker-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(234, 88, 12, 0.55);
+  }
+  70% {
+    box-shadow: 0 0 0 12px rgba(234, 88, 12, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(234, 88, 12, 0);
+  }
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.animate-slide-up {
+  animation: slide-up 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Shimmer overlay for skeletons */
+.shimmer {
+  position: relative;
+  overflow: hidden;
+}
+.shimmer::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+  animation: shimmer 1.5s infinite;
 }
 
 /* Leaflet overrides */
@@ -55,4 +157,19 @@
 .geprek-marker {
   background: transparent;
   border: none;
+}
+.geprek-pulse {
+  border-radius: 9999px;
+  animation: marker-pulse 2s ease-out infinite;
+}
+
+/* ---------- Accessibility: respect reduced motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
 }
