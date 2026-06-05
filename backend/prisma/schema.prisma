@@ -1,0 +1,44 @@
+// Prisma schema for Geprek-Supply Smart Routing.
+// Default provider is SQLite so the project runs with zero external services.
+// For production, switch `provider` to "mysql" / "postgresql" and point
+// DATABASE_URL at your instance — the models below are portable.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+/// A serviced area (e.g. Priok, Sawangan, Tangsel) with a store center used as
+/// the origin for every smart-radius calculation.
+model Region {
+  id        Int        @id @default(autoincrement())
+  key       String     @unique // url-safe slug: "priok"
+  name      String // display name: "Priok"
+  centerLat Float
+  centerLng Float
+  suppliers Supplier[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+/// A supplier/market offering a raw material at a given price and location.
+model Supplier {
+  id        Int      @id @default(autoincrement())
+  name      String
+  material  String
+  lat       Float
+  lng       Float
+  price     Int // unit price in IDR (integer, no decimals)
+  icon      String // Font Awesome class fragment, e.g. "fa-drumstick-bite"
+  inStock   Boolean  @default(true)
+  region    Region   @relation(fields: [regionId], references: [id], onDelete: Cascade)
+  regionId  Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([regionId])
+}
