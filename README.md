@@ -165,15 +165,26 @@ npm run db:migrate   # create the SQLite schema (Prisma)
 npm run db:seed      # load the initial supplier dataset
 ```
 
-### 4. Run both apps
+### 4. Run the public courier app
 
 ```bash
 npm run dev          # API → http://localhost:4000   ·   Web → http://localhost:5173
 ```
 
-Open **http://localhost:5173** in your browser. To manage stock, visit
-**/admin** and sign in with the email configured in `backend/.env`
-(`ADMIN_EMAIL`).
+Open **http://localhost:5173** in your browser.
+
+### 5. Run the Admin Dashboard (separate app)
+
+The owner dashboard is a **separate application** — it is **not** exposed on the
+public courier site. With `npm run dev` already running (it provides the shared
+API), open a **second terminal**:
+
+```bash
+npm run admin        # Admin dashboard → http://localhost:5174
+```
+
+Open **http://localhost:5174** and sign in with the email configured in
+`backend/.env` (`ADMIN_EMAIL`). Stock changes sync live to the public map.
 
 ---
 
@@ -198,7 +209,8 @@ the server returns **401** when missing and **403** when unauthorized.
 
 | Script | Action |
 | :--- | :--- |
-| `npm run dev` | Run API + Web concurrently. |
+| `npm run dev` | Run API + public Web concurrently (port 5173). |
+| `npm run admin` | Run the separate Admin Dashboard (port 5174). |
 | `npm run build` | Type-check & build both workspaces. |
 | `npm run db:migrate` | Apply the Prisma schema. |
 | `npm run db:seed` | Seed the database. |

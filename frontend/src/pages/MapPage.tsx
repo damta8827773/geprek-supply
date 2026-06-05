@@ -1,6 +1,4 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { ShieldCheck } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import RegionTabs from '@/components/RegionTabs';
 import RadiusControl from '@/components/RadiusControl';
@@ -44,16 +42,7 @@ export default function MapPage() {
 
   return (
     <div className="flex h-[100dvh] w-full flex-col overflow-hidden">
-      <Navbar
-        right={
-          <Link
-            to="/admin"
-            className="flex items-center gap-1 rounded bg-slate-100 px-2 py-1.5 text-[11px] font-bold hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600"
-          >
-            <ShieldCheck size={14} className="text-brand" /> Admin
-          </Link>
-        }
-      />
+      <Navbar />
 
       <div className="relative flex flex-1 flex-col overflow-hidden md:flex-row">
         {/* Map (top on mobile, right on desktop) */}

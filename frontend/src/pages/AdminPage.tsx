@@ -1,6 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { ArrowLeft, Check, LogOut, MapPin, ShieldCheck, X } from 'lucide-react';
+import { Check, LogOut, MapPin, ShieldCheck, X } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import { useAllSuppliers, useSetStock } from '@/hooks/useSuppliers';
 import { useAdminStore } from '@/store/adminStore';
@@ -121,18 +120,14 @@ function Dashboard() {
 
 export default function AdminPage() {
   const email = useAdminStore((s) => s.email);
-  const t = useDictionary();
 
   return (
     <div className="flex h-[100dvh] w-full flex-col bg-slate-100 dark:bg-slate-900">
       <Navbar
         right={
-          <Link
-            to="/"
-            className="flex items-center gap-1 rounded bg-slate-100 px-2 py-1.5 text-[11px] font-bold hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600"
-          >
-            <ArrowLeft size={14} className="text-brand" /> {t.backToMap}
-          </Link>
+          <span className="flex items-center gap-1 rounded bg-orange-100 px-2 py-1.5 text-[11px] font-bold text-brand dark:bg-orange-900/30">
+            <ShieldCheck size={14} /> Admin Panel
+          </span>
         }
       />
       <div className="flex flex-1 items-center justify-center overflow-hidden p-6">

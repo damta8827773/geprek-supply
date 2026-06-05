@@ -6,7 +6,9 @@
   "description": "React + Vite client for Geprek-Supply Smart Routing.",
   "scripts": {
     "dev": "vite",
+    "dev:admin": "vite --mode admin --port 5174",
     "build": "tsc --noEmit && vite build",
+    "build:admin": "tsc --noEmit && vite build --mode admin --outDir dist-admin",
     "preview": "vite preview",
     "lint": "tsc --noEmit"
   },

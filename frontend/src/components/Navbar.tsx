@@ -1,6 +1,7 @@
 import { type ReactNode } from 'react';
-import { Languages, Moon, Sun, Truck } from 'lucide-react';
+import { Languages, Moon, Sun } from 'lucide-react';
 import { useUiStore } from '@/store/uiStore';
+import Logo from '@/components/Logo';
 
 interface NavbarProps {
   /** Optional slot rendered on the far right (e.g. admin user chip). */
@@ -13,9 +14,7 @@ export default function Navbar({ right }: NavbarProps) {
   return (
     <nav className="z-20 flex shrink-0 items-center justify-between border-b border-slate-200 bg-white px-3 py-2 shadow-sm dark:border-slate-700 dark:bg-slate-800 md:px-4 md:py-3">
       <div className="flex items-center gap-2">
-        <div className="rounded-md bg-brand p-1.5 text-white shadow-glow transition-transform duration-300 hover:rotate-6 hover:scale-110">
-          <Truck size={16} />
-        </div>
+        <Logo size={32} />
         <h1 className="text-base font-extrabold tracking-tight md:text-lg">
           Geprek<span className="text-brand">Supply</span>
         </h1>
