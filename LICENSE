@@ -1,0 +1,27 @@
+Educational Reference License
+Copyright (c) 2026 Damta Noviyan Muhamad Faiz
+
+This source code is published for EDUCATIONAL ANALYSIS and TECHNICAL REFERENCE
+only.
+
+Permission is hereby granted to any person obtaining a copy of this software and
+associated documentation files (the "Software") to:
+
+  - Read, study, and analyze the architecture and source code.
+  - Reuse small, isolated patterns or snippets (e.g. the i18n approach, the
+    smart-radius distance logic, or the API layering) inside their own original
+    projects, with attribution.
+
+The following are explicitly NOT permitted without prior written consent of the
+author:
+
+  - Cloning or copying the Software in whole, or substantial parts, to deploy,
+    submit, or present it as your own work.
+  - Removing or altering attribution, and claiming authorship of the design,
+    architecture, or implementation.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHOR BE
+LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY ARISING FROM, OUT OF OR IN
+CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.

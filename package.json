@@ -1,0 +1,30 @@
+{
+  "name": "geprek-supply",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Geprek-Supply Smart Routing — a full-stack supplier mapping & smart-radius routing platform for a fried-chicken (ayam geprek) supply chain.",
+  "author": "Damta Noviyan Muhamad Faiz <damtafaiz@gmail.com>",
+  "license": "LicenseRef-Educational",
+  "engines": {
+    "node": ">=20"
+  },
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
+  "scripts": {
+    "dev": "concurrently -n api,web -c magenta,cyan \"npm:dev:api\" \"npm:dev:web\"",
+    "dev:api": "npm run dev --workspace backend",
+    "dev:web": "npm run dev --workspace frontend",
+    "build": "npm run build --workspace backend && npm run build --workspace frontend",
+    "db:migrate": "npm run db:migrate --workspace backend",
+    "db:seed": "npm run db:seed --workspace backend",
+    "db:reset": "npm run db:reset --workspace backend",
+    "lint": "npm run lint --workspaces --if-present",
+    "format": "prettier --write \"**/*.{ts,tsx,js,json,md,css}\""
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0",
+    "prettier": "^3.4.2"
+  }
+}
