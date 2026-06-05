@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    name: Build & Type-check
+    runs-on: ubuntu-latest
+
+    env:
+      # Prisma needs a DATABASE_URL present at generate/build time.
+      DATABASE_URL: 'file:./dev.db'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate Prisma client
+        working-directory: backend
+        run: npx prisma generate
+
+      - name: Build backend (Prisma + tsc)
+        working-directory: backend
+        run: npm run build
+
+      - name: Type-check & build frontend
+        working-directory: frontend
+        run: npm run build

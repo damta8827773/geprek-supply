@@ -1,5 +1,6 @@
 # 🍗 Geprek-Supply · Smart Routing Platform
 
+[![CI](https://github.com/damta8827773/geprek-supply/actions/workflows/ci.yml/badge.svg)](https://github.com/damta8827773/geprek-supply/actions/workflows/ci.yml)
 ![Project Status](https://img.shields.io/badge/Status-Active-brightgreen)
 ![Frontend](https://img.shields.io/badge/Frontend-React%2018%20%7C%20TypeScript%20%7C%20Vite-61DAFB)
 ![Backend](https://img.shields.io/badge/Backend-Node.js%20%7C%20Express%20%7C%20Prisma-339933)
