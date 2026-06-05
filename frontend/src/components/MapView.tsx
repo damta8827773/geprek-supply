@@ -54,8 +54,11 @@ function MapController({
   const map = useMap();
 
   useEffect(() => {
-    const circle = L.circle([center.lat, center.lng], { radius: radiusKm * 1000 });
-    map.flyToBounds(circle.getBounds(), { padding: [40, 40], duration: 0.6 });
+    // Build the bounds from the point itself (toBounds takes the full box size in
+    // metres = 2 × radius). Avoids calling getBounds() on a circle that isn't
+    // attached to a map, which would crash.
+    const bounds = L.latLng(center.lat, center.lng).toBounds(radiusKm * 2 * 1000);
+    map.flyToBounds(bounds, { padding: [40, 40], duration: 0.6 });
   }, [map, center.lat, center.lng, radiusKm]);
 
   useEffect(() => {
