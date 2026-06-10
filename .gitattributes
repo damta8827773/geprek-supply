@@ -8,3 +8,11 @@
 *.gif binary
 *.ico binary
 *.webp binary
+
+# --- GitHub language statistics (Linguist) ---
+# This is a TypeScript project. The handful of HTML/CSS/JS files are only the
+# Vite mount shell, Tailwind directives, and build config — not the source
+# language — so exclude them so the repo is reported as TypeScript.
+*.html linguist-detectable=false
+*.css linguist-detectable=false
+*.js linguist-detectable=false
