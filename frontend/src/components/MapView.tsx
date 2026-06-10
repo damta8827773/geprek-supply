@@ -1,37 +1,31 @@
-import { useEffect, useMemo } from 'react';
-import L from 'leaflet';
-import { Circle, MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet';
-import type { LatLng, Supplier } from '@/types';
+import { useEffect, useMemo, useRef } from 'react';
+import {
+  Map,
+  MapControls,
+  MapMarker,
+  MapRoute,
+  MarkerContent,
+  MarkerLabel,
+  MarkerPopup,
+  type MapRef,
+} from '@/components/ui/mapcn-map-route';
 import { useUiStore } from '@/store/uiStore';
-
-const TILES = {
-  light: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
-  dark: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
-};
+import type { LatLng, Supplier } from '@/types';
 
 const BRAND = '#ea580c';
+const KM_PER_LAT_DEG = 110.574;
+const KM_PER_LNG_DEG = 111.32;
 
-function divIcon(html: string, size: number) {
-  return L.divIcon({
-    html,
-    className: 'geprek-marker',
-    iconSize: [size, size],
-    iconAnchor: [size / 2, size / 2],
-  });
-}
-
-const centerIcon = divIcon(
-  `<div style="display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:9999px;background:#1e293b;color:#fff;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.4)"><i class="fa-solid fa-store" style="font-size:12px"></i></div>`,
-  32,
-);
-
-function supplierIcon(s: Supplier) {
-  const bg = s.inStock ? BRAND : '#ef4444';
-  const pulse = s.inStock ? 'geprek-pulse' : '';
-  return divIcon(
-    `<div class="${pulse}" style="display:flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:9999px;background:${bg};color:#fff;border:2px solid #fff;box-shadow:0 2px 5px rgba(0,0,0,.35)"><i class="fa-solid ${s.icon}" style="font-size:11px"></i></div>`,
-    26,
-  );
+/** Build a closed ring of [lng,lat] points approximating a circle (for the radius). */
+function circleRing(center: LatLng, radiusKm: number, points = 72): [number, number][] {
+  const latR = radiusKm / KM_PER_LAT_DEG;
+  const lngR = radiusKm / (KM_PER_LNG_DEG * Math.cos((center.lat * Math.PI) / 180));
+  const ring: [number, number][] = [];
+  for (let i = 0; i <= points; i += 1) {
+    const a = (i / points) * 2 * Math.PI;
+    ring.push([center.lng + lngR * Math.cos(a), center.lat + latR * Math.sin(a)]);
+  }
+  return ring;
 }
 
 interface MapViewProps {
@@ -42,33 +36,6 @@ interface MapViewProps {
   mainStoreLabel: string;
 }
 
-/** Imperatively reacts to center/radius/focus changes. */
-function MapController({
-  center,
-  radiusKm,
-  focus,
-}: {
-  center: LatLng;
-  radiusKm: number;
-  focus: LatLng | null;
-}) {
-  const map = useMap();
-
-  useEffect(() => {
-    // Build the bounds from the point itself (toBounds takes the full box size in
-    // metres = 2 × radius). Avoids calling getBounds() on a circle that isn't
-    // attached to a map, which would crash.
-    const bounds = L.latLng(center.lat, center.lng).toBounds(radiusKm * 2 * 1000);
-    map.flyToBounds(bounds, { padding: [40, 40], duration: 0.6 });
-  }, [map, center.lat, center.lng, radiusKm]);
-
-  useEffect(() => {
-    if (focus) map.flyTo([focus.lat, focus.lng], 15, { duration: 0.6 });
-  }, [map, focus]);
-
-  return null;
-}
-
 export default function MapView({
   center,
   radiusKm,
@@ -77,43 +44,104 @@ export default function MapView({
   mainStoreLabel,
 }: MapViewProps) {
   const theme = useUiStore((s) => s.theme);
-  const tileUrl = theme === 'dark' ? TILES.dark : TILES.light;
+  const mapRef = useRef<MapRef>(null);
 
-  const markers = useMemo(
-    () =>
-      suppliers.map((s) => (
-        <Marker key={s.id} position={[s.lat, s.lng]} icon={supplierIcon(s)}>
-          <Popup>
-            <strong>{s.name}</strong>
-            <br />
-            {s.material}
-          </Popup>
-        </Marker>
-      )),
-    [suppliers],
-  );
+  const ring = useMemo(() => circleRing(center, radiusKm), [center, radiusKm]);
+
+  // Fit the viewport to the search radius whenever the region or radius changes.
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+    const latR = radiusKm / KM_PER_LAT_DEG;
+    const lngR = radiusKm / (KM_PER_LNG_DEG * Math.cos((center.lat * Math.PI) / 180));
+    map.fitBounds(
+      [
+        [center.lng - lngR, center.lat - latR],
+        [center.lng + lngR, center.lat + latR],
+      ],
+      { padding: 60, duration: 800 },
+    );
+  }, [center.lat, center.lng, radiusKm]);
+
+  // Fly to a supplier when its card is selected.
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !focus) return;
+    map.flyTo({ center: [focus.lng, focus.lat], zoom: 14, duration: 800 });
+  }, [focus]);
+
+  const isFocused = (s: Supplier) =>
+    !!focus && Math.abs(focus.lat - s.lat) < 1e-9 && Math.abs(focus.lng - s.lng) < 1e-9;
 
   return (
-    <MapContainer
-      center={[center.lat, center.lng]}
+    <Map
+      ref={mapRef}
+      theme={theme}
+      center={[center.lng, center.lat]}
       zoom={12}
-      zoomControl={false}
-      attributionControl={false}
       className="h-full w-full"
     >
-      <TileLayer key={theme} url={tileUrl} />
-      <Circle
-        center={[center.lat, center.lng]}
-        radius={radiusKm * 1000}
-        pathOptions={{ color: BRAND, fillColor: BRAND, fillOpacity: 0.08, weight: 2, dashArray: '5,5' }}
+      <MapControls showZoom showCompass showFullscreen position="bottom-right" />
+
+      {/* Search-radius ring */}
+      <MapRoute
+        id="radius-ring"
+        coordinates={ring}
+        color={BRAND}
+        width={2}
+        opacity={0.7}
+        dashArray={[2, 2]}
+        interactive={false}
       />
-      <Marker position={[center.lat, center.lng]} icon={centerIcon}>
-        <Popup>
-          <strong>{mainStoreLabel}</strong>
-        </Popup>
-      </Marker>
-      {markers}
-      <MapController center={center} radiusKm={radiusKm} focus={focus} />
-    </MapContainer>
+
+      {/* Routing lines from the store to each in-stock supplier */}
+      {suppliers
+        .filter((s) => s.inStock)
+        .map((s) => (
+          <MapRoute
+            key={`route-${s.id}`}
+            id={`route-${s.id}`}
+            coordinates={[
+              [center.lng, center.lat],
+              [s.lng, s.lat],
+            ]}
+            color={isFocused(s) ? BRAND : '#94a3b8'}
+            width={isFocused(s) ? 4 : 1.5}
+            opacity={isFocused(s) ? 0.9 : 0.5}
+            interactive={false}
+          />
+        ))}
+
+      {/* Main store marker */}
+      <MapMarker longitude={center.lng} latitude={center.lat}>
+        <MarkerContent>
+          <div className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-white bg-slate-900 text-white shadow-lg dark:bg-white dark:text-slate-900">
+            <i className="fa-solid fa-store text-xs" />
+          </div>
+          <MarkerLabel position="top" className="rounded bg-slate-900/80 px-1 text-white">
+            {mainStoreLabel}
+          </MarkerLabel>
+        </MarkerContent>
+      </MapMarker>
+
+      {/* Supplier markers */}
+      {suppliers.map((s) => (
+        <MapMarker key={s.id} longitude={s.lng} latitude={s.lat}>
+          <MarkerContent>
+            <div
+              className={`flex h-6 w-6 items-center justify-center rounded-full border-2 border-white text-white shadow-md ${
+                s.inStock ? 'geprek-pulse bg-brand' : 'bg-red-500'
+              }`}
+            >
+              <i className={`fa-solid ${s.icon} text-[10px]`} />
+            </div>
+          </MarkerContent>
+          <MarkerPopup closeButton>
+            <p className="text-xs font-bold text-slate-900 dark:text-white">{s.name}</p>
+            <p className="text-[10px] text-slate-500 dark:text-slate-400">{s.material}</p>
+          </MarkerPopup>
+        </MapMarker>
+      ))}
+    </Map>
   );
 }
