@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Check, LogOut, MapPin, ShieldCheck, X } from 'lucide-react';
 import Navbar from '@/components/Navbar';
+import { AuroraBackground } from '@/components/ui/aurora-background';
 import { useAllSuppliers, useSetStock } from '@/hooks/useSuppliers';
 import { useAdminStore } from '@/store/adminStore';
 import { useDictionary } from '@/store/uiStore';
@@ -130,9 +131,15 @@ export default function AdminPage() {
           </span>
         }
       />
-      <div className="flex flex-1 items-center justify-center overflow-hidden p-6">
-        {email ? <Dashboard /> : <LoginCard />}
-      </div>
+      {email ? (
+        <div className="flex flex-1 items-center justify-center overflow-hidden p-6">
+          <Dashboard />
+        </div>
+      ) : (
+        <AuroraBackground className="flex-1 overflow-hidden p-6">
+          <LoginCard />
+        </AuroraBackground>
+      )}
     </div>
   );
 }

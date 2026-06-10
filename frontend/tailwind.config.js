@@ -22,9 +22,14 @@ export default {
           '0%': { opacity: '0', transform: 'translateY(6px)' },
           '100%': { opacity: '1', transform: 'translateY(0)' },
         },
+        aurora: {
+          from: { backgroundPosition: '50% 50%, 50% 50%' },
+          to: { backgroundPosition: '350% 50%, 350% 50%' },
+        },
       },
       animation: {
         'fade-in': 'fade-in 0.3s ease-out',
+        aurora: 'aurora 60s linear infinite',
       },
     },
   },
