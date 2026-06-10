@@ -13,7 +13,7 @@ export interface Region {
   supplierCount: number;
 }
 
-export type FuelTier = 'efficient' | 'normal' | 'thirsty';
+export type DeliveryTier = 'low' | 'mid' | 'high';
 
 export interface Supplier {
   id: number;
@@ -26,9 +26,11 @@ export interface Supplier {
   inStock: boolean;
   regionId: number;
   distanceKm: number;
-  fuelCost: number;
-  fuelTier: FuelTier;
-  steps: number;
+  /** Estimated Gojek (GoSend Instant) delivery cost in IDR. */
+  deliveryCost: number;
+  deliveryTier: DeliveryTier;
+  /** Estimated arrival time in minutes. */
+  etaMinutes: number;
 }
 
 export interface RegionSuppliersResponse {

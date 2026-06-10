@@ -1,13 +1,13 @@
 import clsx from 'clsx';
-import { Crown, Footprints, Fuel, Navigation } from 'lucide-react';
-import type { FuelTier, Supplier } from '@/types';
+import { Bike, Clock, Crown, Navigation } from 'lucide-react';
+import type { DeliveryTier, Supplier } from '@/types';
 import { useDictionary } from '@/store/uiStore';
-import { formatKm, formatNumber, formatRupiah } from '@/lib/format';
+import { formatKm, formatRupiah } from '@/lib/format';
 
-const FUEL_COLOR: Record<FuelTier, string> = {
-  efficient: 'text-emerald-500',
-  normal: 'text-yellow-500',
-  thirsty: 'text-red-500',
+const COST_COLOR: Record<DeliveryTier, string> = {
+  low: 'text-emerald-500',
+  mid: 'text-yellow-500',
+  high: 'text-red-500',
 };
 
 interface SupplierCardProps {
@@ -26,8 +26,8 @@ export default function SupplierCard({
   best = false,
 }: SupplierCardProps) {
   const t = useDictionary();
-  const fuelLabel =
-    s.fuelTier === 'efficient' ? t.fuelEfficient : s.fuelTier === 'normal' ? t.fuelNormal : t.fuelThirsty;
+  const costLabel =
+    s.deliveryTier === 'low' ? t.costLow : s.deliveryTier === 'mid' ? t.costMid : t.costHigh;
 
   return (
     <button
@@ -82,15 +82,15 @@ export default function SupplierCard({
       <div className="mb-3 mt-2 grid grid-cols-2 gap-2 border-t border-slate-100 pt-2 dark:border-slate-700">
         <div className="text-[9px] text-slate-500 dark:text-slate-400">
           <span className="flex items-center gap-1">
-            <Fuel size={11} className="text-orange-500" /> {formatRupiah(s.fuelCost)}
+            <Bike size={11} className="text-emerald-500" /> {formatRupiah(s.deliveryCost)}
           </span>
-          <span className={clsx('font-bold', FUEL_COLOR[s.fuelTier])}>{fuelLabel}</span>
+          <span className={clsx('font-bold', COST_COLOR[s.deliveryTier])}>{costLabel}</span>
         </div>
         <div className="text-right text-[9px] text-slate-500 dark:text-slate-400">
           <span className="flex items-center justify-end gap-1">
-            <Footprints size={11} className="text-sky-500" /> {formatNumber(s.steps)} {t.steps}
+            <Clock size={11} className="text-sky-500" /> {s.etaMinutes} {t.etaUnit}
           </span>
-          <span className="font-bold text-slate-400 dark:text-slate-500">{t.landEstimate}</span>
+          <span className="font-bold text-slate-400 dark:text-slate-500">{t.etaLabel}</span>
         </div>
       </div>
 

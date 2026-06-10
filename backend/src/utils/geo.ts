@@ -19,20 +19,28 @@ export function haversineKm(lat1: number, lng1: number, lat2: number, lng2: numb
   return EARTH_RADIUS_KM * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
 }
 
-/** Rough fuel cost estimate (IDR), assuming ~40 km/L and Rp 10.000/L, rounded to Rp 500. */
-export function estimateFuelCost(distanceKm: number): number {
-  const raw = (distanceKm / 40) * 10000;
-  return Math.round(raw / 500) * 500;
+// --- Gojek delivery tariff (GoSend Instant, Jabodetabek / "Zona II", 2025) ---
+// The whole Jabodetabek area shares one regulated tariff, so the courier cost
+// depends on distance only — not on which kecamatan you are in.
+const GOJEK_RATE_PER_KM = 2815; // IDR per km
+const GOJEK_MINIMUM_FARE = 13000; // IDR minimum charge
+
+/** Estimated Gojek (GoSend Instant) delivery cost in IDR, rounded to Rp 100. */
+export function estimateDeliveryCost(distanceKm: number): number {
+  const raw = Math.max(GOJEK_MINIMUM_FARE, distanceKm * GOJEK_RATE_PER_KM);
+  return Math.round(raw / 100) * 100;
 }
 
-/** Fuel-efficiency tier used for the colored badge in the UI. */
-export function fuelTier(distanceKm: number): 'efficient' | 'normal' | 'thirsty' {
-  if (distanceKm <= 3) return 'efficient';
-  if (distanceKm <= 7) return 'normal';
-  return 'thirsty';
+export type DeliveryTier = 'low' | 'mid' | 'high';
+
+/** Cost tier used for the colored badge in the UI. */
+export function deliveryTier(distanceKm: number): DeliveryTier {
+  if (distanceKm <= 4) return 'low'; // still within the minimum-fare band
+  if (distanceKm <= 8) return 'mid';
+  return 'high';
 }
 
-/** Naive walking-steps estimate (~1312 steps per km) used as a fun stat. */
-export function estimateSteps(distanceKm: number): number {
-  return Math.round(distanceKm * 1312);
+/** Estimated arrival time (minutes) for a motorbike courier (~22 km/h in city traffic). */
+export function estimateEtaMinutes(distanceKm: number): number {
+  return Math.max(5, Math.round((distanceKm / 22) * 60));
 }

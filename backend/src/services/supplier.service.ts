@@ -1,7 +1,7 @@
 import type { Region, Supplier } from '@prisma/client';
 import { prisma } from '../lib/prisma.js';
 import { ApiError } from '../utils/ApiError.js';
-import { estimateFuelCost, estimateSteps, fuelTier, haversineKm } from '../utils/geo.js';
+import { deliveryTier, estimateDeliveryCost, estimateEtaMinutes, haversineKm } from '../utils/geo.js';
 import { findRegionByKey } from './region.service.js';
 
 /** Enriches a raw supplier row with smart-routing metrics relative to a center. */
@@ -18,16 +18,16 @@ function enrich(supplier: Supplier, center: { lat: number; lng: number }) {
     inStock: supplier.inStock,
     regionId: supplier.regionId,
     distanceKm: Number(distanceKm.toFixed(2)),
-    fuelCost: estimateFuelCost(distanceKm),
-    fuelTier: fuelTier(distanceKm),
-    steps: estimateSteps(distanceKm),
+    deliveryCost: estimateDeliveryCost(distanceKm),
+    deliveryTier: deliveryTier(distanceKm),
+    etaMinutes: estimateEtaMinutes(distanceKm),
   };
 }
 
 export type EnrichedSupplier = ReturnType<typeof enrich>;
 
 /**
- * Returns suppliers for a region, enriched with distance/fuel/steps, optionally
+ * Returns suppliers for a region, enriched with distance/delivery-cost/ETA, optionally
  * filtered to a search radius, and always sorted cheapest-first.
  */
 export async function getSuppliersForRegion(regionKey: string, radiusKm?: number) {

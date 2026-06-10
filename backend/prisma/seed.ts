@@ -21,9 +21,9 @@ type SeedRegion = {
 };
 
 // Regions are modelled at the kecamatan (district) level for consistency.
-// The three Tangsel/Depok kecamatan are ordered by historical establishment:
-// Ciputat (parent district, oldest) → Pamulang (split from Ciputat) →
-// Bojongsari (youngest, split from Sawangan, Depok — Perda 2007 / effective 2009).
+// Tanjung Priok (Jakarta Utara) plus three Tangsel/Depok kecamatan ordered by
+// historical establishment: Ciputat (parent district, oldest) →
+// Pamulang (split from Ciputat) → Bojongsari (youngest, Depok — Perda 2007 / 2009).
 const regions: SeedRegion[] = [
   {
     key: 'tanjung-priok',
@@ -37,19 +37,6 @@ const regions: SeedRegion[] = [
       { name: 'Pasar Kelapa Gading', material: 'Tepung Bumbu', lat: -6.16, lng: 106.9, price: 12000, icon: 'fa-wheat-awn' },
       { name: 'Grosir Telur Sunter', material: 'Telur Ayam', lat: -6.145, lng: 106.87, price: 26000, icon: 'fa-egg' },
       { name: 'Agen Daging Cilincing', material: 'Cabai Grosir', lat: -6.108, lng: 106.93, price: 45000, icon: 'fa-pepper-hot' },
-    ],
-  },
-  {
-    key: 'sawangan',
-    name: 'Sawangan',
-    centerLat: -6.3917,
-    centerLng: 106.777,
-    suppliers: [
-      { name: 'Pasar Sawangan Baru', material: 'Ayam Potong', lat: -6.395, lng: 106.77, price: 31000, icon: 'fa-drumstick-bite' },
-      { name: 'Toko Muchtar', material: 'Tepung Terigu', lat: -6.398, lng: 106.765, price: 11000, icon: 'fa-wheat-awn', inStock: false },
-      { name: 'Grosir Gas Parung', material: 'Gas LPG 3kg', lat: -6.42, lng: 106.79, price: 19000, icon: 'fa-fire-flame-simple' },
-      { name: 'Pasar Sawangan Permai', material: 'Telur Ayam', lat: -6.38, lng: 106.785, price: 25500, icon: 'fa-egg' },
-      { name: 'Agen Cabai Pengasinan', material: 'Cabai Rawit', lat: -6.4, lng: 106.79, price: 52000, icon: 'fa-pepper-hot' },
     ],
   },
   {
