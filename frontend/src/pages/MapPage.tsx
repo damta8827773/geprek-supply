@@ -13,8 +13,8 @@ export default function MapPage() {
   const { data: regions = [] } = useRegions();
 
   const [activeKey, setActiveKey] = useState<string>('');
-  const [radius, setRadius] = useState(15);
-  const [appliedRadius, setAppliedRadius] = useState(15);
+  const [radius, setRadius] = useState(10);
+  const [appliedRadius, setAppliedRadius] = useState(10);
   const [focus, setFocus] = useState<LatLng | null>(null);
 
   // Pick the first region once the list arrives.

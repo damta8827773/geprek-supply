@@ -19,6 +19,9 @@ export const dictionaries = {
     fuelEfficient: 'Sangat Irit',
     fuelNormal: 'Normal',
     fuelThirsty: 'Boros Bensin',
+    bestDeal: 'Termurah',
+    statSuppliers: 'Pemasok',
+    statFrom: 'Mulai',
     // Admin
     adminTitle: 'Otorisasi Sistem',
     adminSubtitle: 'Masuk dengan email admin terdaftar',
@@ -48,6 +51,9 @@ export const dictionaries = {
     fuelEfficient: 'Very Efficient',
     fuelNormal: 'Normal',
     fuelThirsty: 'Fuel Hungry',
+    bestDeal: 'Best Deal',
+    statSuppliers: 'Suppliers',
+    statFrom: 'From',
     // Admin
     adminTitle: 'System Authorization',
     adminSubtitle: 'Sign in with a registered admin email',

@@ -20,10 +20,14 @@ type SeedRegion = {
   suppliers: SeedSupplier[];
 };
 
+// Regions are modelled at the kecamatan (district) level for consistency.
+// The three Tangsel/Depok kecamatan are ordered by historical establishment:
+// Ciputat (parent district, oldest) → Pamulang (split from Ciputat) →
+// Bojongsari (youngest, split from Sawangan, Depok — Perda 2007 / effective 2009).
 const regions: SeedRegion[] = [
   {
-    key: 'priok',
-    name: 'Priok',
+    key: 'tanjung-priok',
+    name: 'Tanjung Priok',
     centerLat: -6.1194,
     centerLng: 106.8832,
     suppliers: [
@@ -32,7 +36,7 @@ const regions: SeedRegion[] = [
       { name: 'Gas Koja', material: 'Gas LPG 3kg', lat: -6.115, lng: 106.89, price: 21000, icon: 'fa-fire-flame-simple', inStock: false },
       { name: 'Pasar Kelapa Gading', material: 'Tepung Bumbu', lat: -6.16, lng: 106.9, price: 12000, icon: 'fa-wheat-awn' },
       { name: 'Grosir Telur Sunter', material: 'Telur Ayam', lat: -6.145, lng: 106.87, price: 26000, icon: 'fa-egg' },
-      { name: 'Pasar Senen (Pusat)', material: 'Cabai Grosir', lat: -6.175, lng: 106.84, price: 45000, icon: 'fa-pepper-hot' },
+      { name: 'Agen Daging Cilincing', material: 'Cabai Grosir', lat: -6.108, lng: 106.93, price: 45000, icon: 'fa-pepper-hot' },
     ],
   },
   {
@@ -42,24 +46,49 @@ const regions: SeedRegion[] = [
     centerLng: 106.777,
     suppliers: [
       { name: 'Pasar Sawangan Baru', material: 'Ayam Potong', lat: -6.395, lng: 106.77, price: 31000, icon: 'fa-drumstick-bite' },
-      { name: 'Toko Muchtar', material: 'Tepung', lat: -6.398, lng: 106.765, price: 11000, icon: 'fa-wheat-awn', inStock: false },
-      { name: 'Grosir Gas Parung', material: 'Gas LPG 3kg', lat: -6.42, lng: 106.73, price: 19000, icon: 'fa-fire-flame-simple' },
-      { name: 'Pasar Depok Lama', material: 'Telur Ayam', lat: -6.4, lng: 106.82, price: 25500, icon: 'fa-egg' },
-      { name: 'Agen Margonda', material: 'Ayam Potong Segar', lat: -6.37, lng: 106.83, price: 30500, icon: 'fa-drumstick-bite' },
+      { name: 'Toko Muchtar', material: 'Tepung Terigu', lat: -6.398, lng: 106.765, price: 11000, icon: 'fa-wheat-awn', inStock: false },
+      { name: 'Grosir Gas Parung', material: 'Gas LPG 3kg', lat: -6.42, lng: 106.79, price: 19000, icon: 'fa-fire-flame-simple' },
+      { name: 'Pasar Sawangan Permai', material: 'Telur Ayam', lat: -6.38, lng: 106.785, price: 25500, icon: 'fa-egg' },
+      { name: 'Agen Cabai Pengasinan', material: 'Cabai Rawit', lat: -6.4, lng: 106.79, price: 52000, icon: 'fa-pepper-hot' },
     ],
   },
   {
-    key: 'tangsel',
-    name: 'Tangsel',
-    centerLat: -6.2917,
-    centerLng: 106.7214,
+    key: 'ciputat',
+    name: 'Ciputat',
+    centerLat: -6.3122,
+    centerLng: 106.7515,
     suppliers: [
-      { name: 'Pasar Jombang', material: 'Cabai Setan', lat: -6.285, lng: 106.715, price: 60000, icon: 'fa-pepper-hot' },
-      { name: 'Gas Villa Mutiara', material: 'Gas LPG', lat: -6.29, lng: 106.72, price: 20000, icon: 'fa-fire-flame-simple', inStock: false },
       { name: 'Pasar Ciputat', material: 'Ayam Potong', lat: -6.312, lng: 106.746, price: 33000, icon: 'fa-drumstick-bite' },
-      { name: 'Pasar Modern BSD', material: 'Tepung Terigu', lat: -6.305, lng: 106.68, price: 12500, icon: 'fa-wheat-awn' },
-      { name: 'Grosir Telur Bintaro', material: 'Telur Ayam', lat: -6.27, lng: 106.7, price: 27000, icon: 'fa-egg' },
-      { name: 'Pasar Serpong', material: 'Cabai Kiloan', lat: -6.32, lng: 106.66, price: 50000, icon: 'fa-pepper-hot' },
+      { name: 'Agen Cabai Jombang', material: 'Cabai Setan', lat: -6.32, lng: 106.745, price: 58000, icon: 'fa-pepper-hot' },
+      { name: 'Gas Kp. Utan', material: 'Gas LPG 3kg', lat: -6.315, lng: 106.756, price: 20000, icon: 'fa-fire-flame-simple', inStock: false },
+      { name: 'Grosir Telur Ciputat', material: 'Telur Ayam', lat: -6.308, lng: 106.758, price: 27000, icon: 'fa-egg' },
+      { name: 'Toko Tepung Cireundeu', material: 'Tepung Terigu', lat: -6.305, lng: 106.762, price: 12500, icon: 'fa-wheat-awn' },
+    ],
+  },
+  {
+    key: 'pamulang',
+    name: 'Pamulang',
+    centerLat: -6.343,
+    centerLng: 106.738,
+    suppliers: [
+      { name: 'Pasar Pamulang', material: 'Ayam Potong', lat: -6.34, lng: 106.74, price: 32500, icon: 'fa-drumstick-bite' },
+      { name: 'Agen Cabai Vila Dago', material: 'Cabai Setan', lat: -6.335, lng: 106.745, price: 56000, icon: 'fa-pepper-hot' },
+      { name: 'Gas Pamulang Permai', material: 'Gas LPG 3kg', lat: -6.338, lng: 106.732, price: 19500, icon: 'fa-fire-flame-simple' },
+      { name: 'Grosir Telur Reni Jaya', material: 'Telur Ayam', lat: -6.35, lng: 106.742, price: 26500, icon: 'fa-egg', inStock: false },
+      { name: 'Toko Tepung Benda Baru', material: 'Tepung Bumbu', lat: -6.346, lng: 106.73, price: 12000, icon: 'fa-wheat-awn' },
+    ],
+  },
+  {
+    key: 'bojongsari',
+    name: 'Bojongsari',
+    centerLat: -6.406,
+    centerLng: 106.756,
+    suppliers: [
+      { name: 'Pasar Bojongsari', material: 'Ayam Potong', lat: -6.405, lng: 106.754, price: 31500, icon: 'fa-drumstick-bite' },
+      { name: 'Agen Cabai Serua', material: 'Cabai Rawit', lat: -6.4, lng: 106.76, price: 54000, icon: 'fa-pepper-hot' },
+      { name: 'Gas Bojongsari Baru', material: 'Gas LPG 3kg', lat: -6.41, lng: 106.75, price: 19000, icon: 'fa-fire-flame-simple', inStock: false },
+      { name: 'Grosir Telur Duren Seribu', material: 'Telur Ayam', lat: -6.415, lng: 106.758, price: 25500, icon: 'fa-egg' },
+      { name: 'Toko Tepung Curug', material: 'Tepung Terigu', lat: -6.402, lng: 106.762, price: 12500, icon: 'fa-wheat-awn' },
     ],
   },
 ];

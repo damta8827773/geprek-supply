@@ -28,7 +28,7 @@ export default function RadiusControl({
       <input
         type="range"
         min={1}
-        max={20}
+        max={10}
         step={0.5}
         value={radius}
         onChange={(e) => onRadiusChange(Number(e.target.value))}

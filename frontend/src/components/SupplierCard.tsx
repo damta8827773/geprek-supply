@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import { Footprints, Fuel, Navigation } from 'lucide-react';
+import { Crown, Footprints, Fuel, Navigation } from 'lucide-react';
 import type { FuelTier, Supplier } from '@/types';
 import { useDictionary } from '@/store/uiStore';
 import { formatKm, formatNumber, formatRupiah } from '@/lib/format';
@@ -15,9 +15,16 @@ interface SupplierCardProps {
   onSelect: (supplier: Supplier) => void;
   /** Position in the list — drives the staggered entrance animation. */
   index?: number;
+  /** Highlight as the cheapest available supplier. */
+  best?: boolean;
 }
 
-export default function SupplierCard({ supplier: s, onSelect, index = 0 }: SupplierCardProps) {
+export default function SupplierCard({
+  supplier: s,
+  onSelect,
+  index = 0,
+  best = false,
+}: SupplierCardProps) {
   const t = useDictionary();
   const fuelLabel =
     s.fuelTier === 'efficient' ? t.fuelEfficient : s.fuelTier === 'normal' ? t.fuelNormal : t.fuelThirsty;
@@ -28,12 +35,19 @@ export default function SupplierCard({ supplier: s, onSelect, index = 0 }: Suppl
       onClick={() => onSelect(s)}
       style={{ animationDelay: `${index * 60}ms` }}
       className={clsx(
-        'card-hover animate-slide-up block w-full rounded-xl border bg-white p-3 text-left shadow-sm dark:bg-slate-800',
-        s.inStock
-          ? 'border-slate-200 hover:border-brand dark:border-slate-700'
-          : 'border-red-200 opacity-60 dark:border-red-900',
+        'card-hover animate-slide-up relative block w-full rounded-xl border bg-white p-3 text-left shadow-sm dark:bg-slate-800',
+        best
+          ? 'border-brand ring-2 ring-brand/40'
+          : s.inStock
+            ? 'border-slate-200 hover:border-brand dark:border-slate-700'
+            : 'border-red-200 opacity-60 dark:border-red-900',
       )}
     >
+      {best && (
+        <span className="absolute -right-1.5 -top-1.5 z-10 flex items-center gap-0.5 rounded-full bg-gradient-to-r from-amber-400 to-brand px-2 py-0.5 text-[8px] font-extrabold uppercase tracking-wide text-white shadow-md">
+          <Crown size={9} /> {t.bestDeal}
+        </span>
+      )}
       <div className="mb-2 flex items-start justify-between">
         <div className="flex items-center gap-2">
           <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-orange-100 text-brand dark:bg-orange-900/30">

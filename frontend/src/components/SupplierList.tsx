@@ -1,6 +1,7 @@
-import { PackageOpen } from 'lucide-react';
+import { PackageOpen, Store, Tag } from 'lucide-react';
 import type { Supplier } from '@/types';
 import { useDictionary } from '@/store/uiStore';
+import { formatRupiah } from '@/lib/format';
 import SupplierCard from './SupplierCard';
 
 interface SupplierListProps {
@@ -32,10 +33,31 @@ export default function SupplierList({ suppliers, loading, onSelect }: SupplierL
     );
   }
 
+  // Suppliers arrive sorted cheapest-first, so the first in-stock one is the best deal.
+  const bestIndex = suppliers.findIndex((s) => s.inStock);
+  const cheapest = bestIndex >= 0 ? suppliers[bestIndex].price : null;
+
   return (
     <div className="space-y-3 p-3">
+      <div className="flex items-center justify-between rounded-xl border border-slate-200 bg-white/70 px-3 py-2 text-[11px] font-bold shadow-sm backdrop-blur dark:border-slate-700 dark:bg-slate-800/70">
+        <span className="flex items-center gap-1.5 text-slate-600 dark:text-slate-300">
+          <Store size={13} className="text-brand" /> {suppliers.length} {t.statSuppliers}
+        </span>
+        {cheapest !== null && (
+          <span className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400">
+            <Tag size={13} /> {t.statFrom} {formatRupiah(cheapest)}
+          </span>
+        )}
+      </div>
+
       {suppliers.map((s, i) => (
-        <SupplierCard key={s.id} supplier={s} onSelect={onSelect} index={i} />
+        <SupplierCard
+          key={s.id}
+          supplier={s}
+          onSelect={onSelect}
+          index={i}
+          best={i === bestIndex}
+        />
       ))}
     </div>
   );
