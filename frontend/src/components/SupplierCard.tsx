@@ -26,8 +26,6 @@ export default function SupplierCard({
   best = false,
 }: SupplierCardProps) {
   const t = useDictionary();
-  const costLabel =
-    s.deliveryTier === 'low' ? t.costLow : s.deliveryTier === 'mid' ? t.costMid : t.costHigh;
 
   return (
     <button
@@ -64,9 +62,14 @@ export default function SupplierCard({
       </div>
 
       <div className="mb-2 flex items-center justify-between">
-        <span className="text-sm font-black text-emerald-600 dark:text-emerald-400">
-          {formatRupiah(s.price)}
-        </span>
+        <div className="flex items-baseline gap-1.5">
+          <span className="text-[9px] font-bold uppercase tracking-wide text-slate-400">
+            {t.priceLabel}
+          </span>
+          <span className="text-sm font-black text-emerald-600 dark:text-emerald-400">
+            {formatRupiah(s.price)}
+          </span>
+        </div>
         <span
           className={clsx(
             'rounded px-2 py-0.5 text-[9px] font-extrabold uppercase',
@@ -81,16 +84,20 @@ export default function SupplierCard({
 
       <div className="mb-3 mt-2 grid grid-cols-2 gap-2 border-t border-slate-100 pt-2 dark:border-slate-700">
         <div className="text-[9px] text-slate-500 dark:text-slate-400">
-          <span className="flex items-center gap-1">
-            <Bike size={11} className="text-emerald-500" /> {formatRupiah(s.deliveryCost)}
+          <span className="block text-[8px] font-bold uppercase tracking-wide text-slate-400">
+            {t.deliveryCost}
           </span>
-          <span className={clsx('font-bold', COST_COLOR[s.deliveryTier])}>{costLabel}</span>
+          <span className={clsx('flex items-center gap-1 font-bold', COST_COLOR[s.deliveryTier])}>
+            <Bike size={11} /> {formatRupiah(s.deliveryCost)}
+          </span>
         </div>
         <div className="text-right text-[9px] text-slate-500 dark:text-slate-400">
-          <span className="flex items-center justify-end gap-1">
-            <Clock size={11} className="text-sky-500" /> {s.etaMinutes} {t.etaUnit}
+          <span className="block text-[8px] font-bold uppercase tracking-wide text-slate-400">
+            {t.etaLabel}
           </span>
-          <span className="font-bold text-slate-400 dark:text-slate-500">{t.etaLabel}</span>
+          <span className="flex items-center justify-end gap-1 font-bold text-sky-500">
+            <Clock size={11} /> {s.etaMinutes} {t.etaUnit}
+          </span>
         </div>
       </div>
 
