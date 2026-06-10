@@ -19,13 +19,13 @@ export function haversineKm(lat1: number, lng1: number, lat2: number, lng2: numb
   return EARTH_RADIUS_KM * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
 }
 
-// --- Gojek delivery tariff (GoSend Instant, Jabodetabek / "Zona II", 2025) ---
-// The whole Jabodetabek area shares one regulated tariff, so the courier cost
-// depends on distance only — not on which kecamatan you are in.
-const GOJEK_RATE_PER_KM = 2815; // IDR per km
-const GOJEK_MINIMUM_FARE = 13000; // IDR minimum charge
+// --- Gojek GoRide tariff (motorbike, Jabodetabek / "Zona II", 2025) ---
+// Using the regulated lower-bound (batas bawah) rate. The whole Jabodetabek area
+// shares one tariff, so cost depends on distance only — not on the kecamatan.
+const GOJEK_RATE_PER_KM = 2550; // IDR per km (GoRide batas bawah, Zona II)
+const GOJEK_MINIMUM_FARE = 10200; // IDR minimum (biaya jasa minimal 4 km pertama)
 
-/** Estimated Gojek (GoSend Instant) delivery cost in IDR, rounded to Rp 100. */
+/** Estimated Gojek (GoRide) cost in IDR, rounded to Rp 100. */
 export function estimateDeliveryCost(distanceKm: number): number {
   const raw = Math.max(GOJEK_MINIMUM_FARE, distanceKm * GOJEK_RATE_PER_KM);
   return Math.round(raw / 100) * 100;
