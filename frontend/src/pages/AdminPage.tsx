@@ -7,13 +7,18 @@ import { useAdminStore } from '@/store/adminStore';
 import { useDictionary } from '@/store/uiStore';
 import { formatRupiah } from '@/lib/format';
 
+/** Only this email may access the admin dashboard (matches the server's ADMIN_EMAIL). */
+const ADMIN_EMAIL = (import.meta.env.VITE_ADMIN_EMAIL ?? 'damtafaiz@gmail.com')
+  .trim()
+  .toLowerCase();
+
 function LoginCard() {
   const t = useDictionary();
   const login = useAdminStore((s) => s.login);
   const [email, setEmail] = useState('');
 
   const submit = () => {
-    if (!email.includes('@')) {
+    if (email.trim().toLowerCase() !== ADMIN_EMAIL) {
       alert(t.accessDenied);
       return;
     }
@@ -162,6 +167,7 @@ function Dashboard() {
 
 export default function AdminPage() {
   const email = useAdminStore((s) => s.email);
+  const isAdmin = !!email && email.trim().toLowerCase() === ADMIN_EMAIL;
 
   return (
     <div className="flex h-[100dvh] w-full flex-col bg-slate-100 dark:bg-slate-900">
@@ -172,7 +178,7 @@ export default function AdminPage() {
           </span>
         }
       />
-      {email ? (
+      {isAdmin ? (
         <div className="flex flex-1 items-center justify-center overflow-hidden p-6">
           <Dashboard />
         </div>
