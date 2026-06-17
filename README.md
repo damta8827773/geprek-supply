@@ -19,7 +19,7 @@
 (*ayam geprek*) supply chain. From a single store origin, a courier can sweep a
 configurable radius and instantly see every nearby supplier — ranked
 cheapest-first — complete with **live distance, fuel-cost estimate, walking-step
-estimate, stock status, and a one-tap Waze route**.
+estimate, ETA, stock status, and a one-tap Google Maps route**.
 
 What started as a single static HTML prototype has been re-engineered into a
 **typed full-stack monorepo**: a **React 18 + TypeScript (Vite)** client talking
@@ -84,12 +84,12 @@ This repository is published as **Open Source for Educational Analysis**.
 
 - **🎯 Smart Radius Routing** — Haversine distance from the store origin, filtered
   by a live radius slider and **sorted cheapest-first**.
-- **⛽ Decision Metrics** — per-supplier fuel-cost estimate, efficiency tier
-  (Irit / Normal / Boros), and a walking-step estimate.
-- **🗺️ Interactive Map** — React-Leaflet with custom markers, radius circle,
-  auto-fit bounds, and fly-to-on-select.
-- **🧭 One-Tap Waze** — deep-links straight into turn-by-turn navigation (disabled
-  for out-of-stock suppliers).
+- **🛵 Decision Metrics** — per-supplier **GoRide delivery-cost** estimate, cost
+  tier, ETA, and operating hours (open/closed status).
+- **🗺️ Interactive Map** — MapLibre GL with custom markers, popups, a radius ring,
+  routing lines from the store to each supplier, and fly-to-on-select.
+- **🧭 One-Tap Google Maps** — deep-links straight into turn-by-turn directions
+  (disabled for out-of-stock suppliers).
 - **🛡️ Owner Dashboard** — toggle stock availability in real time; changes sync
   instantly back to the courier map.
 - **🌗 Theme Switcher** — seamless Dark (neon) / Light mode, persisted locally.

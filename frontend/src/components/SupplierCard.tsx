@@ -124,17 +124,17 @@ export default function SupplierCard({
 
       {s.inStock ? (
         <a
-          href={`https://waze.com/ul?ll=${s.lat},${s.lng}&navigate=yes`}
+          href={`https://www.google.com/maps/dir/?api=1&destination=${s.lat},${s.lng}&travelmode=driving`}
           target="_blank"
           rel="noreferrer"
           onClick={(e) => e.stopPropagation()}
           className="flex w-full items-center justify-center gap-1 rounded-lg bg-sky-500 py-1.5 text-[10px] font-bold text-white hover:bg-sky-600"
         >
-          <Navigation size={12} /> {t.wazeRoute}
+          <Navigation size={12} /> {t.mapsRoute}
         </a>
       ) : (
         <span className="flex w-full cursor-not-allowed items-center justify-center gap-1 rounded-lg bg-slate-200 py-1.5 text-[10px] font-bold text-slate-400 dark:bg-slate-700">
-          <Navigation size={12} /> {t.wazeRoute}
+          <Navigation size={12} /> {t.mapsRoute}
         </span>
       )}
     </button>
