@@ -25,6 +25,9 @@ export interface Supplier {
   lng: number;
   price: number;
   icon: string;
+  /** Opening / closing hour (0-23). */
+  openHour: number;
+  closeHour: number;
   inStock: boolean;
   regionId: number;
   distanceKm: number;
@@ -49,6 +52,8 @@ export interface AdminSupplier {
   unit: string;
   price: number;
   icon: string;
+  openHour: number;
+  closeHour: number;
   inStock: boolean;
 }
 

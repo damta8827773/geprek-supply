@@ -30,6 +30,8 @@ export default function App() {
   return (
     <Routes>
       <Route path="/" element={<MapPage />} />
+      {/* Direct-URL access to the dashboard; intentionally not linked in the public UI. */}
+      <Route path="/admin" element={<AdminPage />} />
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );

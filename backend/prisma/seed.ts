@@ -102,16 +102,22 @@ async function main() {
       data: {
         ...regionData,
         suppliers: {
-          create: suppliers.map((s) => ({
-            name: s.name,
-            material: s.material,
-            unit: s.unit,
-            lat: s.lat,
-            lng: s.lng,
-            price: s.price,
-            icon: s.icon,
-            inStock: s.inStock ?? true,
-          })),
+          create: suppliers.map((s) => {
+            // Markets/wholesalers/farms open early; agents/shops open later.
+            const early = /(pasar|grosir|kebun)/i.test(s.name);
+            return {
+              name: s.name,
+              material: s.material,
+              unit: s.unit,
+              lat: s.lat,
+              lng: s.lng,
+              price: s.price,
+              icon: s.icon,
+              openHour: early ? 5 : 7,
+              closeHour: early ? 17 : 20,
+              inStock: s.inStock ?? true,
+            };
+          }),
         },
       },
       include: { suppliers: true },

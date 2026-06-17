@@ -11,10 +11,13 @@ function enrich(supplier: Supplier, center: { lat: number; lng: number }) {
     id: supplier.id,
     name: supplier.name,
     material: supplier.material,
+    unit: supplier.unit,
     lat: supplier.lat,
     lng: supplier.lng,
     price: supplier.price,
     icon: supplier.icon,
+    openHour: supplier.openHour,
+    closeHour: supplier.closeHour,
     inStock: supplier.inStock,
     regionId: supplier.regionId,
     distanceKm: Number(distanceKm.toFixed(2)),
@@ -43,7 +46,8 @@ export async function getSuppliersForRegion(regionKey: string, radiusKm?: number
   if (typeof radiusKm === 'number') {
     enriched = enriched.filter((s) => s.distanceKm <= radiusKm);
   }
-  enriched.sort((a, b) => a.price - b.price);
+  // Group by material (alphabetical) then cheapest-first within each group.
+  enriched.sort((a, b) => a.material.localeCompare(b.material) || a.price - b.price);
 
   return {
     region: { id: region.id, key: region.key, name: region.name, center },
@@ -57,7 +61,7 @@ export async function getSuppliersForRegion(regionKey: string, radiusKm?: number
 export async function listAllSuppliersByRegion() {
   const regions = await prisma.region.findMany({
     orderBy: { id: 'asc' },
-    include: { suppliers: { orderBy: { id: 'asc' } } },
+    include: { suppliers: { orderBy: [{ material: 'asc' }, { price: 'asc' }] } },
   });
 
   return regions.map((r) => ({
@@ -67,8 +71,11 @@ export async function listAllSuppliersByRegion() {
       id: s.id,
       name: s.name,
       material: s.material,
+      unit: s.unit,
       price: s.price,
       icon: s.icon,
+      openHour: s.openHour,
+      closeHour: s.closeHour,
       inStock: s.inStock,
     })),
   }));

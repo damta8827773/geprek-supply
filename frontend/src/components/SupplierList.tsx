@@ -33,8 +33,11 @@ export default function SupplierList({ suppliers, loading, onSelect }: SupplierL
     );
   }
 
-  // Suppliers arrive sorted cheapest-first, so the first in-stock one is the best deal.
-  const bestIndex = suppliers.findIndex((s) => s.inStock);
+  // The list is grouped by material, so find the cheapest in-stock supplier overall.
+  let bestIndex = -1;
+  suppliers.forEach((s, i) => {
+    if (s.inStock && (bestIndex === -1 || s.price < suppliers[bestIndex].price)) bestIndex = i;
+  });
   const cheapest = bestIndex >= 0 ? suppliers[bestIndex].price : null;
 
   return (

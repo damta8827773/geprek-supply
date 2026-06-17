@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import { Bike, Clock, Crown, Navigation } from 'lucide-react';
+import { Bike, Clock, Crown, Navigation, Timer } from 'lucide-react';
 import type { DeliveryTier, Supplier } from '@/types';
 import { useDictionary } from '@/store/uiStore';
 import { formatKm, formatRupiah } from '@/lib/format';
@@ -9,6 +9,8 @@ const COST_COLOR: Record<DeliveryTier, string> = {
   mid: 'text-yellow-500',
   high: 'text-red-500',
 };
+
+const fmtHour = (h: number) => `${String(h).padStart(2, '0')}.00`;
 
 interface SupplierCardProps {
   supplier: Supplier;
@@ -26,6 +28,7 @@ export default function SupplierCard({
   best = false,
 }: SupplierCardProps) {
   const t = useDictionary();
+  const isOpen = new Date().getHours() >= s.openHour && new Date().getHours() < s.closeHour;
 
   return (
     <button
@@ -83,6 +86,23 @@ export default function SupplierCard({
         </span>
       </div>
 
+      {/* Operating hours + open/closed status */}
+      <div className="mb-1.5 flex items-center justify-between text-[9px]">
+        <span className="flex items-center gap-1 text-slate-500 dark:text-slate-400">
+          <Clock size={10} /> {t.hoursLabel} {fmtHour(s.openHour)}–{fmtHour(s.closeHour)}
+        </span>
+        <span
+          className={clsx(
+            'rounded px-1.5 py-0.5 font-bold uppercase',
+            isOpen
+              ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400'
+              : 'bg-slate-200 text-slate-500 dark:bg-slate-700 dark:text-slate-400',
+          )}
+        >
+          {isOpen ? t.openNow : t.closedNow}
+        </span>
+      </div>
+
       <div className="mb-3 mt-2 grid grid-cols-2 gap-2 border-t border-slate-100 pt-2 dark:border-slate-700">
         <div className="text-[9px] text-slate-500 dark:text-slate-400">
           <span className="block text-[8px] font-bold uppercase tracking-wide text-slate-400">
@@ -97,7 +117,7 @@ export default function SupplierCard({
             {t.etaLabel}
           </span>
           <span className="flex items-center justify-end gap-1 font-bold text-sky-500">
-            <Clock size={11} /> {s.etaMinutes} {t.etaUnit}
+            <Timer size={11} /> {s.etaMinutes} {t.etaUnit}
           </span>
         </div>
       </div>

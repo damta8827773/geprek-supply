@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Check, LogOut, MapPin, ShieldCheck, X } from 'lucide-react';
+import { Check, Clock, LogOut, MapPin, Search, ShieldCheck, X } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import { AuroraBackground } from '@/components/ui/aurora-background';
 import { useAllSuppliers, useSetStock } from '@/hooks/useSuppliers';
@@ -51,6 +51,8 @@ function Dashboard() {
   const logout = useAdminStore((s) => s.logout);
   const { data: groups = [], isLoading } = useAllSuppliers();
   const setStock = useSetStock();
+  const [q, setQ] = useState('');
+  const needle = q.trim().toLowerCase();
 
   const toggle = (id: number, current: boolean) => {
     setStock.mutate(
@@ -76,12 +78,26 @@ function Dashboard() {
         </button>
       </div>
 
+      <div className="relative mb-3">
+        <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+        <input
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+          placeholder={t.searchPlaceholder}
+          className="w-full rounded-xl border border-slate-200 bg-white py-2.5 pl-9 pr-3 text-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-orange-200 dark:border-slate-700 dark:bg-slate-800"
+        />
+      </div>
+
       <div className="flex-1 overflow-y-auto rounded-2xl border border-slate-200 bg-white p-3 custom-scrollbar dark:border-slate-700 dark:bg-slate-800">
         {isLoading ? (
           <p className="p-4 text-sm text-slate-400">Loading…</p>
         ) : (
           groups.map((group) => {
-            const available = group.suppliers.filter((s) => s.inStock).length;
+            const matched = group.suppliers.filter((s) =>
+              `${s.name} ${s.material}`.toLowerCase().includes(needle),
+            );
+            if (matched.length === 0) return null;
+            const available = matched.filter((s) => s.inStock).length;
             return (
             <div key={group.key} className="mb-6">
               <h3 className="mb-3 flex items-center justify-between rounded-lg border border-slate-100 bg-slate-50 p-2 text-sm font-bold dark:border-slate-700 dark:bg-slate-900">
@@ -89,11 +105,11 @@ function Dashboard() {
                   <MapPin size={14} className="mr-1 inline text-brand" /> {group.name}
                 </span>
                 <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400">
-                  {available}/{group.suppliers.length} tersedia
+                  {available}/{matched.length} tersedia
                 </span>
               </h3>
               <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
-                {group.suppliers.map((s, i) => (
+                {matched.map((s, i) => (
                   <div
                     key={s.id}
                     style={{ animationDelay: `${i * 50}ms` }}
@@ -111,6 +127,11 @@ function Dashboard() {
                             {formatRupiah(s.price)}
                           </span>{' '}
                           / {s.unit}
+                        </p>
+                        <p className="flex items-center gap-1 text-[9px] text-slate-400">
+                          <Clock size={9} />
+                          {String(s.openHour).padStart(2, '0')}.00–
+                          {String(s.closeHour).padStart(2, '0')}.00
                         </p>
                       </div>
                     </div>

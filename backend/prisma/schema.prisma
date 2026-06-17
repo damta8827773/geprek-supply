@@ -35,6 +35,8 @@ model Supplier {
   lng       Float
   price     Int // price per unit in IDR (integer, no decimals)
   icon      String // Font Awesome class fragment, e.g. "fa-drumstick-bite"
+  openHour  Int      @default(7) // opening hour (0-23)
+  closeHour Int      @default(20) // closing hour (0-23)
   inStock   Boolean  @default(true)
   region    Region   @relation(fields: [regionId], references: [id], onDelete: Cascade)
   regionId  Int
