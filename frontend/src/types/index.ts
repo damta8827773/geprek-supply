@@ -19,6 +19,8 @@ export interface Supplier {
   id: number;
   name: string;
   material: string;
+  /** Selling unit / weight, e.g. "kg", "tabung 3 kg", "liter". */
+  unit: string;
   lat: number;
   lng: number;
   price: number;
@@ -44,6 +46,7 @@ export interface AdminSupplier {
   id: number;
   name: string;
   material: string;
+  unit: string;
   price: number;
   icon: string;
   inStock: boolean;

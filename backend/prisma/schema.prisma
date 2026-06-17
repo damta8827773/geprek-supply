@@ -30,9 +30,10 @@ model Supplier {
   id        Int      @id @default(autoincrement())
   name      String
   material  String
+  unit      String   @default("kg") // selling unit / weight, e.g. "kg", "tabung 3 kg", "liter"
   lat       Float
   lng       Float
-  price     Int // unit price in IDR (integer, no decimals)
+  price     Int // price per unit in IDR (integer, no decimals)
   icon      String // Font Awesome class fragment, e.g. "fa-drumstick-bite"
   inStock   Boolean  @default(true)
   region    Region   @relation(fields: [regionId], references: [id], onDelete: Cascade)

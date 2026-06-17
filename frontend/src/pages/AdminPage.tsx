@@ -5,6 +5,7 @@ import { AuroraBackground } from '@/components/ui/aurora-background';
 import { useAllSuppliers, useSetStock } from '@/hooks/useSuppliers';
 import { useAdminStore } from '@/store/adminStore';
 import { useDictionary } from '@/store/uiStore';
+import { formatRupiah } from '@/lib/format';
 
 function LoginCard() {
   const t = useDictionary();
@@ -79,21 +80,39 @@ function Dashboard() {
         {isLoading ? (
           <p className="p-4 text-sm text-slate-400">Loading…</p>
         ) : (
-          groups.map((group) => (
+          groups.map((group) => {
+            const available = group.suppliers.filter((s) => s.inStock).length;
+            return (
             <div key={group.key} className="mb-6">
-              <h3 className="mb-3 rounded-lg border border-slate-100 bg-slate-50 p-2 text-sm font-bold dark:border-slate-700 dark:bg-slate-900">
-                <MapPin size={14} className="mr-1 inline text-brand" /> {group.name}
+              <h3 className="mb-3 flex items-center justify-between rounded-lg border border-slate-100 bg-slate-50 p-2 text-sm font-bold dark:border-slate-700 dark:bg-slate-900">
+                <span>
+                  <MapPin size={14} className="mr-1 inline text-brand" /> {group.name}
+                </span>
+                <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400">
+                  {available}/{group.suppliers.length} tersedia
+                </span>
               </h3>
               <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
                 {group.suppliers.map((s, i) => (
                   <div
                     key={s.id}
                     style={{ animationDelay: `${i * 50}ms` }}
-                    className="card-hover animate-slide-up flex items-center justify-between rounded-xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-800"
+                    className="card-hover animate-slide-up flex items-center justify-between gap-2 rounded-xl border border-slate-200 bg-white p-3 shadow-sm dark:border-slate-700 dark:bg-slate-800"
                   >
-                    <div>
-                      <p className="text-sm font-bold">{s.name}</p>
-                      <p className="text-[10px] text-slate-500 dark:text-slate-400">{s.material}</p>
+                    <div className="flex min-w-0 items-center gap-2">
+                      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-orange-100 text-brand dark:bg-orange-900/30">
+                        <i className={`fa-solid ${s.icon} text-sm`} />
+                      </span>
+                      <div className="min-w-0">
+                        <p className="truncate text-sm font-bold">{s.name}</p>
+                        <p className="truncate text-[10px] text-slate-500 dark:text-slate-400">
+                          {s.material} ·{' '}
+                          <span className="font-semibold text-emerald-600 dark:text-emerald-400">
+                            {formatRupiah(s.price)}
+                          </span>{' '}
+                          / {s.unit}
+                        </p>
+                      </div>
                     </div>
                     <button
                       onClick={() => toggle(s.id, s.inStock)}
@@ -112,7 +131,8 @@ function Dashboard() {
                 ))}
               </div>
             </div>
-          ))
+            );
+          })
         )}
       </div>
     </div>

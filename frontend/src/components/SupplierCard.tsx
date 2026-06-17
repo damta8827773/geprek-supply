@@ -62,13 +62,14 @@ export default function SupplierCard({
       </div>
 
       <div className="mb-2 flex items-center justify-between">
-        <div className="flex items-baseline gap-1.5">
+        <div className="flex items-baseline gap-1">
           <span className="text-[9px] font-bold uppercase tracking-wide text-slate-400">
             {t.priceLabel}
           </span>
           <span className="text-sm font-black text-emerald-600 dark:text-emerald-400">
             {formatRupiah(s.price)}
           </span>
+          <span className="text-[9px] font-medium text-slate-400">/ {s.unit}</span>
         </div>
         <span
           className={clsx(
