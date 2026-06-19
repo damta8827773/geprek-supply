@@ -94,7 +94,8 @@ export default function MapView({
         interactive={false}
       />
 
-      {/* Routing lines from the store to each in-stock supplier */}
+      {/* Routing lines from the store to each in-stock supplier.
+          The selected supplier gets a bold Google-Maps-style blue route. */}
       {suppliers
         .filter((s) => s.inStock)
         .map((s) => (
@@ -105,9 +106,9 @@ export default function MapView({
               [center.lng, center.lat],
               [s.lng, s.lat],
             ]}
-            color={isFocused(s) ? BRAND : '#94a3b8'}
-            width={isFocused(s) ? 4 : 1.5}
-            opacity={isFocused(s) ? 0.9 : 0.5}
+            color={isFocused(s) ? '#1a73e8' : '#94a3b8'}
+            width={isFocused(s) ? 6 : 1.5}
+            opacity={isFocused(s) ? 1 : 0.4}
             interactive={false}
           />
         ))}
@@ -125,23 +126,40 @@ export default function MapView({
       </MapMarker>
 
       {/* Supplier markers */}
-      {suppliers.map((s) => (
-        <MapMarker key={s.id} longitude={s.lng} latitude={s.lat}>
-          <MarkerContent>
-            <div
-              className={`flex h-6 w-6 items-center justify-center rounded-full border-2 border-white text-white shadow-md ${
-                s.inStock ? 'geprek-pulse bg-brand' : 'bg-red-500'
-              }`}
-            >
-              <i className={`fa-solid ${s.icon} text-[10px]`} />
-            </div>
-          </MarkerContent>
-          <MarkerPopup closeButton>
-            <p className="text-xs font-bold text-slate-900 dark:text-white">{s.name}</p>
-            <p className="text-[10px] text-slate-500 dark:text-slate-400">{s.material}</p>
-          </MarkerPopup>
-        </MapMarker>
-      ))}
+      {suppliers.map((s) => {
+        const focused = isFocused(s);
+        return (
+          <MapMarker key={s.id} longitude={s.lng} latitude={s.lat}>
+            <MarkerContent>
+              <div
+                className={`flex items-center justify-center rounded-full border-2 border-white text-white shadow-md transition-all ${
+                  focused
+                    ? 'h-8 w-8 bg-sky-600 ring-4 ring-sky-400/50'
+                    : s.inStock
+                      ? 'geprek-pulse h-6 w-6 bg-brand'
+                      : 'h-6 w-6 bg-red-500'
+                }`}
+              >
+                <i className={`fa-solid ${s.icon} ${focused ? 'text-xs' : 'text-[10px]'}`} />
+              </div>
+              {focused && (
+                <MarkerLabel
+                  position="top"
+                  className="whitespace-nowrap rounded-md bg-sky-600 px-2 py-0.5 font-bold text-white shadow-md"
+                >
+                  {s.name}
+                </MarkerLabel>
+              )}
+            </MarkerContent>
+            <MarkerPopup closeButton>
+              <p className="text-xs font-bold text-slate-900 dark:text-white">{s.name}</p>
+              <p className="text-[10px] text-slate-500 dark:text-slate-400">
+                {s.material} · {s.unit}
+              </p>
+            </MarkerPopup>
+          </MapMarker>
+        );
+      })}
     </Map>
   );
 }

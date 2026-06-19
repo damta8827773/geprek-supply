@@ -5,8 +5,8 @@ interface LogoProps {
 }
 
 /**
- * Interactive SVG brand mark: a delivery scooter following a dashed road up to a
- * destination pin — representing "smart routing" of supplies. On hover the badge
+ * Interactive SVG brand mark: a map/location pin holding a fried-chicken
+ * drumstick — i.e. the *location of ayam-geprek supplies*. On hover the badge
  * lifts/tilts and emits a pulse ring (pure CSS, scalable & crisp).
  */
 export default function Logo({ size = 32, className = '' }: LogoProps) {
@@ -36,39 +36,22 @@ export default function Logo({ size = 32, className = '' }: LogoProps) {
 
         <rect x="2" y="2" width="44" height="44" rx="13" fill="url(#geprekLogoGrad)" />
 
-        {/* Dashed road curving from the scooter up to the destination */}
+        {/* Location pin */}
         <path
-          d="M9 41 C 20 41, 18 24, 33 16"
-          fill="none"
-          stroke="#fff"
-          strokeWidth="1.6"
-          strokeLinecap="round"
-          strokeDasharray="2 2.6"
-          opacity="0.85"
-        />
-
-        {/* Destination pin */}
-        <path
-          d="M33 9.3 c-2.1 0-3.8 1.7-3.8 3.8 0 2.8 3.8 5.9 3.8 5.9 s3.8-3.1 3.8-5.9 c0-2.1-1.7-3.8-3.8-3.8 z"
+          d="M24 7c-6.2 0-11.2 5-11.2 11.2 0 8.4 11.2 19 11.2 19s11.2-10.6 11.2-19C35.2 12 30.2 7 24 7z"
           fill="#fff"
         />
-        <circle cx="33" cy="13.1" r="1.5" fill="#ea580c" />
 
-        {/* Delivery scooter */}
-        <g
-          fill="none"
-          stroke="#fff"
-          strokeWidth="1.7"
+        {/* Drumstick inside the pin */}
+        <circle cx="21.6" cy="16.8" r="4.3" fill="url(#geprekLogoGrad)" />
+        <path
+          d="M24.4 19.4 L28.4 23.4"
+          stroke="#ea580c"
+          strokeWidth="2.6"
           strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <circle cx="14" cy="36" r="2.9" />
-          <circle cx="25" cy="36" r="2.9" />
-          <path d="M14 36 L16.5 31 H21 L23 36" />
-          <path d="M21 31 L24 27 H26.5" />
-        </g>
-        {/* Delivery box on the back */}
-        <rect x="11" y="26.4" width="4.6" height="4.6" rx="1" fill="#fff" />
+        />
+        <circle cx="29.1" cy="24" r="1.7" fill="#fb923c" />
+        <circle cx="27.5" cy="25.5" r="1.5" fill="#fb923c" />
       </svg>
     </span>
   );
