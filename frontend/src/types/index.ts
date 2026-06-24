@@ -25,6 +25,8 @@ export interface Supplier {
   lng: number;
   price: number;
   icon: string;
+  /** Optional product photo URL; falls back to a category emoji when absent. */
+  imageUrl?: string | null;
   /** Opening / closing hour (0-23). */
   openHour: number;
   closeHour: number;

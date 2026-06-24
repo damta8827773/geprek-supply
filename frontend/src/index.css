@@ -381,9 +381,7 @@
   align-items: flex-end;
   justify-content: center;
   gap: 34px;
-  padding: 34px 24px 10px;
-  transform: rotateX(12deg);
-  transform-style: preserve-3d;
+  padding: 40px 28px 12px;
 }
 .bar3d {
   position: relative;
