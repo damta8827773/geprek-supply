@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import { Bike, Clock, Crown, Navigation, Timer } from 'lucide-react';
+import { Bike, Clock, Crown, Navigation, Star, Timer } from 'lucide-react';
 import type { DeliveryTier, Supplier } from '@/types';
 import { useDictionary } from '@/store/uiStore';
 import { formatKm, formatRupiah } from '@/lib/format';
@@ -75,9 +75,16 @@ export default function SupplierCard({
             <h3 className="truncate text-xs font-bold leading-tight">{s.name}</h3>
             <p className="truncate text-[10px] text-slate-500 dark:text-slate-400">{s.material}</p>
           </div>
-          <span className="shrink-0 rounded bg-slate-100 px-1.5 py-0.5 text-[10px] font-bold dark:bg-slate-700">
-            {formatKm(s.distanceKm)}
-          </span>
+          <div className="flex shrink-0 flex-col items-end gap-1">
+            <span className="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] font-bold dark:bg-slate-700">
+              {formatKm(s.distanceKm)}
+            </span>
+            {s.rating != null && (
+              <span className="flex items-center gap-0.5 text-[10px] font-bold text-amber-500">
+                <Star size={10} className="fill-amber-400 text-amber-400" /> {s.rating.toFixed(1)}
+              </span>
+            )}
+          </div>
         </div>
 
         <div className="mt-1.5 flex items-center justify-between gap-2">

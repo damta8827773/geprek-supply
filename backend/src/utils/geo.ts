@@ -40,7 +40,7 @@ export function deliveryTier(distanceKm: number): DeliveryTier {
   return 'high';
 }
 
-/** Estimated arrival time (minutes) for a motorbike courier (~22 km/h in city traffic). */
+/** Estimated arrival time (minutes) for a motorbike courier (~24 km/h Jakarta city avg). */
 export function estimateEtaMinutes(distanceKm: number): number {
-  return Math.max(5, Math.round((distanceKm / 22) * 60));
+  return Math.max(5, Math.round((distanceKm / 24) * 60));
 }

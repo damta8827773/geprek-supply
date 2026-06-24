@@ -113,6 +113,9 @@ async function main() {
               lng: s.lng,
               price: s.price,
               icon: s.icon,
+              // Example/placeholder rating (4.0–4.8), deterministic & varied.
+              // Replace with real Google ratings when available.
+              rating: Number((4.0 + ((s.price % 9) / 10)).toFixed(1)),
               openHour: early ? 5 : 7,
               closeHour: early ? 17 : 20,
               inStock: s.inStock ?? true,

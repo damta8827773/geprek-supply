@@ -27,6 +27,8 @@ export interface Supplier {
   icon: string;
   /** Optional product photo URL; falls back to a category emoji when absent. */
   imageUrl?: string | null;
+  /** Supplier rating 0-5 (optional). */
+  rating?: number | null;
   /** Opening / closing hour (0-23). */
   openHour: number;
   closeHour: number;

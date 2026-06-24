@@ -13,7 +13,9 @@ import { findRegionByKey } from './region.service.js';
 function enrich(supplier: Supplier, center: { lat: number; lng: number }, road?: RoadMetric | null) {
   const straightKm = haversineKm(center.lat, center.lng, supplier.lat, supplier.lng);
   const distanceKm = road ? road.distanceKm : straightKm;
-  const etaMinutes = road ? Math.max(5, road.durationMin) : estimateEtaMinutes(straightKm);
+  // ETA from the (real road) distance at motorbike speed — approximates a Google
+  // Maps motorbike ETA much better than OSRM's car-profile duration.
+  const etaMinutes = estimateEtaMinutes(distanceKm);
   return {
     id: supplier.id,
     name: supplier.name,
@@ -23,6 +25,7 @@ function enrich(supplier: Supplier, center: { lat: number; lng: number }, road?:
     lng: supplier.lng,
     price: supplier.price,
     icon: supplier.icon,
+    rating: supplier.rating,
     openHour: supplier.openHour,
     closeHour: supplier.closeHour,
     inStock: supplier.inStock,
@@ -31,7 +34,7 @@ function enrich(supplier: Supplier, center: { lat: number; lng: number }, road?:
     deliveryCost: estimateDeliveryCost(distanceKm),
     deliveryTier: deliveryTier(distanceKm),
     etaMinutes,
-    /** true when distance/ETA came from real road routing (OSRM). */
+    /** true when distance came from real road routing (OSRM). */
     viaRoads: !!road,
   };
 }

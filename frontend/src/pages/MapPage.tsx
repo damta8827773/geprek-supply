@@ -51,7 +51,7 @@ export default function MapPage() {
     <div className="flex h-[100dvh] w-full flex-col overflow-hidden">
       <Navbar />
 
-      <div className="relative flex flex-1 flex-col overflow-hidden md:flex-row">
+      <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden md:flex-row">
         {/* Map (top on mobile, right on desktop) */}
         <div className="order-1 h-[40vh] w-full shrink-0 border-b border-slate-200 dark:border-slate-700 md:order-2 md:h-full md:flex-1 md:border-b-0">
           <MapView
@@ -64,7 +64,7 @@ export default function MapPage() {
         </div>
 
         {/* Sidebar */}
-        <aside className="order-2 z-10 flex w-full flex-1 flex-col overflow-hidden border-r border-slate-200 bg-white shadow-lg dark:border-slate-700 dark:bg-slate-800 md:order-1 md:w-[420px] md:flex-none">
+        <aside className="order-2 z-10 flex min-h-0 w-full flex-1 flex-col overflow-hidden border-r border-slate-200 bg-white shadow-lg dark:border-slate-700 dark:bg-slate-800 md:order-1 md:w-[420px] md:flex-none">
           <div className="shrink-0 border-b border-slate-100 p-3 dark:border-slate-700 md:p-4">
             <RegionTabs regions={regions} activeKey={activeKey} onChange={handleRegionChange} />
             <RadiusControl
@@ -87,7 +87,7 @@ export default function MapPage() {
             </div>
           </div>
 
-          <div className="flex-1 overflow-y-auto bg-slate-50 custom-scrollbar dark:bg-slate-900">
+          <div className="min-h-0 flex-1 overflow-y-auto bg-slate-50 custom-scrollbar dark:bg-slate-900">
             <SupplierList suppliers={visibleSuppliers} loading={isFetching} onSelect={handleSelect} />
           </div>
         </aside>
