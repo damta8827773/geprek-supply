@@ -7,6 +7,8 @@ export interface RoadMetric {
   distanceKm: number;
   /** Real driving duration in minutes. */
   durationMin: number;
+  /** true when the duration reflects live traffic (e.g. TomTom), not a fixed model. */
+  trafficAware?: boolean;
 }
 
 /**

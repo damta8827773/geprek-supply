@@ -7,6 +7,9 @@ const envSchema = z.object({
   DATABASE_URL: z.string().min(1, 'DATABASE_URL is required'),
   CORS_ORIGINS: z.string().default('http://localhost:5173'),
   ADMIN_EMAIL: z.string().email().default('damtafaiz@gmail.com'),
+  // Optional: enables real-time, traffic-aware ETA via TomTom Routing.
+  // When empty, the app falls back to OSRM (road distance, no live traffic).
+  TOMTOM_API_KEY: z.string().optional(),
 });
 
 const parsed = envSchema.safeParse(process.env);

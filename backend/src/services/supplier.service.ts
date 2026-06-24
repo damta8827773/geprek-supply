@@ -3,6 +3,8 @@ import { prisma } from '../lib/prisma.js';
 import { ApiError } from '../utils/ApiError.js';
 import { deliveryTier, estimateDeliveryCost, estimateEtaMinutes, haversineKm } from '../utils/geo.js';
 import { roadMetricsFromOrigin, type RoadMetric } from '../utils/osrm.js';
+import { roadMetricsTomTom } from '../utils/tomtom.js';
+import { env } from '../env.js';
 import { findRegionByKey } from './region.service.js';
 
 /**
@@ -13,9 +15,11 @@ import { findRegionByKey } from './region.service.js';
 function enrich(supplier: Supplier, center: { lat: number; lng: number }, road?: RoadMetric | null) {
   const straightKm = haversineKm(center.lat, center.lng, supplier.lat, supplier.lng);
   const distanceKm = road ? road.distanceKm : straightKm;
-  // ETA from the (real road) distance at motorbike speed — approximates a Google
-  // Maps motorbike ETA much better than OSRM's car-profile duration.
-  const etaMinutes = estimateEtaMinutes(distanceKm);
+  // ETA: use the live traffic-aware duration when available (TomTom); otherwise
+  // estimate from the road distance at motorbike speed.
+  const etaMinutes = road?.trafficAware
+    ? Math.max(5, road.durationMin)
+    : estimateEtaMinutes(distanceKm);
   return {
     id: supplier.id,
     name: supplier.name,
@@ -34,8 +38,10 @@ function enrich(supplier: Supplier, center: { lat: number; lng: number }, road?:
     deliveryCost: estimateDeliveryCost(distanceKm),
     deliveryTier: deliveryTier(distanceKm),
     etaMinutes,
-    /** true when distance came from real road routing (OSRM). */
+    /** true when distance came from real road routing (OSRM/TomTom). */
     viaRoads: !!road,
+    /** true when ETA reflects live traffic (TomTom). */
+    viaTraffic: !!road?.trafficAware,
   };
 }
 
@@ -60,12 +66,13 @@ export async function getSuppliersForRegion(regionKey: string, radiusKm?: number
       ? suppliers.filter((s) => haversineKm(center.lat, center.lng, s.lat, s.lng) <= radiusKm)
       : suppliers;
 
-  // Real road distance & ETA for the in-radius set (single OSRM call; falls back to
-  // the straight-line estimate per item if routing is unavailable).
-  const road = await roadMetricsFromOrigin(
-    center,
-    inRadius.map((s) => ({ lat: s.lat, lng: s.lng })),
-  );
+  // Real road distance & ETA for the in-radius set. Prefer TomTom (live traffic)
+  // when a key is configured; otherwise OSRM (road distance, no live traffic).
+  // Either falls back to the straight-line estimate per item on failure.
+  const points = inRadius.map((s) => ({ lat: s.lat, lng: s.lng }));
+  const road = env.TOMTOM_API_KEY
+    ? await roadMetricsTomTom(center, points, env.TOMTOM_API_KEY)
+    : await roadMetricsFromOrigin(center, points);
 
   // Group by material (alphabetical) then cheapest-first within each group.
   const enriched = inRadius
