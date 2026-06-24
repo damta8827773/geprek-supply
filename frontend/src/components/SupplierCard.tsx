@@ -3,6 +3,7 @@ import { Bike, Clock, Crown, Navigation, Timer } from 'lucide-react';
 import type { DeliveryTier, Supplier } from '@/types';
 import { useDictionary } from '@/store/uiStore';
 import { formatKm, formatRupiah } from '@/lib/format';
+import { productEmoji } from '@/lib/product';
 
 const COST_COLOR: Record<DeliveryTier, string> = {
   low: 'text-emerald-500',
@@ -51,8 +52,8 @@ export default function SupplierCard({
       )}
       <div className="mb-2 flex items-start justify-between">
         <div className="flex items-center gap-2">
-          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-orange-100 text-brand dark:bg-orange-900/30">
-            <i className={clsx('fa-solid', s.icon, 'text-xs')} />
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-orange-100 text-lg dark:bg-orange-900/30">
+            {productEmoji(s.material)}
           </span>
           <div>
             <h3 className="text-xs font-bold leading-tight">{s.name}</h3>

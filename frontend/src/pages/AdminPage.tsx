@@ -6,6 +6,7 @@ import { useAllSuppliers, useSetStock } from '@/hooks/useSuppliers';
 import { useAdminStore } from '@/store/adminStore';
 import { useDictionary } from '@/store/uiStore';
 import { formatRupiah } from '@/lib/format';
+import { productEmoji } from '@/lib/product';
 
 /** Only this email may access the admin dashboard (matches the server's ADMIN_EMAIL). */
 const ADMIN_EMAIL = (import.meta.env.VITE_ADMIN_EMAIL ?? 'damtafaiz@gmail.com')
@@ -121,8 +122,8 @@ function Dashboard() {
                     className="card-hover animate-slide-up flex items-center justify-between gap-2 rounded-xl border border-slate-200 bg-white p-3 shadow-sm dark:border-slate-700 dark:bg-slate-800"
                   >
                     <div className="flex min-w-0 items-center gap-2">
-                      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-orange-100 text-brand dark:bg-orange-900/30">
-                        <i className={`fa-solid ${s.icon} text-sm`} />
+                      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-orange-100 text-lg dark:bg-orange-900/30">
+                        {productEmoji(s.material)}
                       </span>
                       <div className="min-w-0">
                         <p className="truncate text-sm font-bold">{s.name}</p>
@@ -144,7 +145,7 @@ function Dashboard() {
                       onClick={() => toggle(s.id, s.inStock)}
                       disabled={setStock.isPending}
                       className={
-                        'press flex items-center gap-1 rounded-lg border px-3 py-1.5 text-xs font-bold transition-colors disabled:opacity-50 ' +
+                        'press flex shrink-0 items-center gap-1 whitespace-nowrap rounded-lg border px-3 py-1.5 text-xs font-bold transition-colors disabled:opacity-50 ' +
                         (s.inStock
                           ? 'border-emerald-300 bg-emerald-100 text-emerald-700 dark:border-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400'
                           : 'border-red-300 bg-red-100 text-red-700 dark:border-red-800 dark:bg-red-900/30 dark:text-red-400')
