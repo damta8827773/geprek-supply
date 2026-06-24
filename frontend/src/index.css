@@ -429,22 +429,27 @@
 }
 .bar3d-tip {
   position: absolute;
-  top: -2px;
+  bottom: 100%;
+  left: 50%;
+  margin-bottom: 8px;
+  transform: translateX(-50%) translateY(6px);
+  z-index: 30;
   white-space: nowrap;
   font-size: 10px;
   font-weight: 700;
   background: #0f172a;
   color: #fff;
-  padding: 2px 6px;
+  padding: 3px 8px;
   border-radius: 6px;
   opacity: 0;
-  transform: translateY(4px);
-  transition: all 0.2s;
+  transition:
+    opacity 0.2s,
+    transform 0.2s;
   pointer-events: none;
 }
 .bar3d:hover .bar3d-tip {
   opacity: 1;
-  transform: translateY(-6px);
+  transform: translateX(-50%) translateY(0);
 }
 
 /* ---------- Accessibility: respect reduced motion ---------- */
