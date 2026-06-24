@@ -2,11 +2,18 @@ import type { Region, Supplier } from '@prisma/client';
 import { prisma } from '../lib/prisma.js';
 import { ApiError } from '../utils/ApiError.js';
 import { deliveryTier, estimateDeliveryCost, estimateEtaMinutes, haversineKm } from '../utils/geo.js';
+import { roadMetricsFromOrigin, type RoadMetric } from '../utils/osrm.js';
 import { findRegionByKey } from './region.service.js';
 
-/** Enriches a raw supplier row with smart-routing metrics relative to a center. */
-function enrich(supplier: Supplier, center: { lat: number; lng: number }) {
-  const distanceKm = haversineKm(center.lat, center.lng, supplier.lat, supplier.lng);
+/**
+ * Enriches a raw supplier row with smart-routing metrics relative to a center.
+ * When a real road metric (OSRM) is supplied, distance/ETA reflect actual roads
+ * ("sesuai data maps"); otherwise it falls back to the straight-line estimate.
+ */
+function enrich(supplier: Supplier, center: { lat: number; lng: number }, road?: RoadMetric | null) {
+  const straightKm = haversineKm(center.lat, center.lng, supplier.lat, supplier.lng);
+  const distanceKm = road ? road.distanceKm : straightKm;
+  const etaMinutes = road ? Math.max(5, road.durationMin) : estimateEtaMinutes(straightKm);
   return {
     id: supplier.id,
     name: supplier.name,
@@ -23,7 +30,9 @@ function enrich(supplier: Supplier, center: { lat: number; lng: number }) {
     distanceKm: Number(distanceKm.toFixed(2)),
     deliveryCost: estimateDeliveryCost(distanceKm),
     deliveryTier: deliveryTier(distanceKm),
-    etaMinutes: estimateEtaMinutes(distanceKm),
+    etaMinutes,
+    /** true when distance/ETA came from real road routing (OSRM). */
+    viaRoads: !!road,
   };
 }
 
@@ -42,12 +51,23 @@ export async function getSuppliersForRegion(regionKey: string, radiusKm?: number
   const suppliers = await prisma.supplier.findMany({ where: { regionId: region.id } });
   const center = { lat: region.centerLat, lng: region.centerLng };
 
-  let enriched = suppliers.map((s) => enrich(s, center));
-  if (typeof radiusKm === 'number') {
-    enriched = enriched.filter((s) => s.distanceKm <= radiusKm);
-  }
+  // Filter by straight-line distance so the result matches the radius circle drawn on the map.
+  const inRadius =
+    typeof radiusKm === 'number'
+      ? suppliers.filter((s) => haversineKm(center.lat, center.lng, s.lat, s.lng) <= radiusKm)
+      : suppliers;
+
+  // Real road distance & ETA for the in-radius set (single OSRM call; falls back to
+  // the straight-line estimate per item if routing is unavailable).
+  const road = await roadMetricsFromOrigin(
+    center,
+    inRadius.map((s) => ({ lat: s.lat, lng: s.lng })),
+  );
+
   // Group by material (alphabetical) then cheapest-first within each group.
-  enriched.sort((a, b) => a.material.localeCompare(b.material) || a.price - b.price);
+  const enriched = inRadius
+    .map((s, i) => enrich(s, center, road?.[i] ?? null))
+    .sort((a, b) => a.material.localeCompare(b.material) || a.price - b.price);
 
   return {
     region: { id: region.id, key: region.key, name: region.name, center },
