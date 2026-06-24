@@ -3,7 +3,6 @@ import { Check, Clock, LogOut, MapPin, Search, ShieldCheck, X } from 'lucide-rea
 import Navbar from '@/components/Navbar';
 import { AuroraBackground } from '@/components/ui/aurora-background';
 import { useAllSuppliers, useSetStock } from '@/hooks/useSuppliers';
-import StockChart3D from '@/components/StockChart3D';
 import { useAdminStore } from '@/store/adminStore';
 import { useDictionary } from '@/store/uiStore';
 import { formatRupiah } from '@/lib/format';
@@ -84,8 +83,6 @@ function Dashboard() {
           <LogOut size={14} /> {t.logout}
         </button>
       </div>
-
-      {!isLoading && groups.length > 0 && <StockChart3D groups={groups} />}
 
       <div className="relative mb-3">
         <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
