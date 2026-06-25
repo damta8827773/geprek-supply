@@ -1,5 +1,5 @@
 import { PackageOpen, Store, Tag } from 'lucide-react';
-import type { Supplier } from '@/types';
+import type { LatLng, Supplier } from '@/types';
 import { useDictionary } from '@/store/uiStore';
 import { formatRupiah } from '@/lib/format';
 import SupplierCard from './SupplierCard';
@@ -8,9 +8,11 @@ interface SupplierListProps {
   suppliers: Supplier[];
   loading: boolean;
   onSelect: (supplier: Supplier) => void;
+  /** Store origin — used so the Google Maps route starts from the same point the system measures from. */
+  origin: LatLng;
 }
 
-export default function SupplierList({ suppliers, loading, onSelect }: SupplierListProps) {
+export default function SupplierList({ suppliers, loading, onSelect, origin }: SupplierListProps) {
   const t = useDictionary();
 
   if (loading) {
@@ -60,6 +62,7 @@ export default function SupplierList({ suppliers, loading, onSelect }: SupplierL
           onSelect={onSelect}
           index={i}
           best={i === bestIndex}
+          origin={origin}
         />
       ))}
     </div>

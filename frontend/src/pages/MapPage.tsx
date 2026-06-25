@@ -88,7 +88,12 @@ export default function MapPage() {
           </div>
 
           <div className="min-h-0 flex-1 overflow-y-auto bg-slate-50 custom-scrollbar dark:bg-slate-900">
-            <SupplierList suppliers={visibleSuppliers} loading={isFetching} onSelect={handleSelect} />
+            <SupplierList
+              suppliers={visibleSuppliers}
+              loading={isFetching}
+              onSelect={handleSelect}
+              origin={center}
+            />
           </div>
         </aside>
       </div>

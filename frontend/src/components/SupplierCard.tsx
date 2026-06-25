@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import { Bike, Clock, Crown, Navigation, Star, Timer } from 'lucide-react';
-import type { DeliveryTier, Supplier } from '@/types';
+import type { DeliveryTier, LatLng, Supplier } from '@/types';
 import { useDictionary } from '@/store/uiStore';
 import { formatKm, formatRupiah } from '@/lib/format';
 import { productEmoji } from '@/lib/product';
@@ -20,6 +20,8 @@ interface SupplierCardProps {
   index?: number;
   /** Highlight as the cheapest available supplier. */
   best?: boolean;
+  /** Store origin so the route starts from the same point the system measures from. */
+  origin: LatLng;
 }
 
 export default function SupplierCard({
@@ -27,6 +29,7 @@ export default function SupplierCard({
   onSelect,
   index = 0,
   best = false,
+  origin,
 }: SupplierCardProps) {
   const t = useDictionary();
   const isOpen = new Date().getHours() >= s.openHour && new Date().getHours() < s.closeHour;
@@ -147,7 +150,7 @@ export default function SupplierCard({
 
         {s.inStock ? (
           <a
-            href={`https://www.google.com/maps/dir/?api=1&destination=${s.lat},${s.lng}&travelmode=driving`}
+            href={`https://www.google.com/maps/dir/?api=1&origin=${origin.lat},${origin.lng}&destination=${s.lat},${s.lng}&travelmode=two-wheeler`}
             target="_blank"
             rel="noreferrer"
             onClick={(e) => e.stopPropagation()}
