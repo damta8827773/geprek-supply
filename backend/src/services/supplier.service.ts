@@ -14,11 +14,14 @@ import { findRegionByKey } from './region.service.js';
  */
 function enrich(supplier: Supplier, center: { lat: number; lng: number }, road?: RoadMetric | null) {
   const straightKm = haversineKm(center.lat, center.lng, supplier.lat, supplier.lng);
-  const distanceKm = road ? road.distanceKm : straightKm;
-  // ETA: use the live traffic-aware duration when available (TomTom); otherwise
-  // estimate from the road distance at motorbike speed.
-  const etaMinutes = road?.trafficAware
-    ? Math.max(5, road.durationMin)
+  // Guard against routing glitches from imprecise coordinates (e.g. a ~1 km point
+  // routed as 18 km): ignore an implausibly long road route and use the estimate.
+  const usable = road && road.distanceKm <= straightKm * 4 + 1 ? road : null;
+  const distanceKm = usable ? usable.distanceKm : straightKm;
+  // ETA: live traffic-aware duration when available (TomTom); otherwise estimate
+  // from distance at motorbike speed.
+  const etaMinutes = usable?.trafficAware
+    ? Math.max(5, usable.durationMin)
     : estimateEtaMinutes(distanceKm);
   return {
     id: supplier.id,
@@ -39,9 +42,9 @@ function enrich(supplier: Supplier, center: { lat: number; lng: number }, road?:
     deliveryTier: deliveryTier(distanceKm),
     etaMinutes,
     /** true when distance came from real road routing (OSRM/TomTom). */
-    viaRoads: !!road,
+    viaRoads: !!usable,
     /** true when ETA reflects live traffic (TomTom). */
-    viaTraffic: !!road?.trafficAware,
+    viaTraffic: !!usable?.trafficAware,
   };
 }
 

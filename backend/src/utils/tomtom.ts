@@ -40,10 +40,23 @@ export async function roadMetricsTomTom(
     }
   };
 
+  // Limit concurrency so we don't trip TomTom's free-tier rate limit (which would
+  // make some suppliers silently fall back to the straight-line estimate).
+  const CONCURRENCY = 3;
+  const results: (RoadMetric | null)[] = new Array(destinations.length).fill(null);
+  let next = 0;
+  const worker = async () => {
+    while (next < destinations.length) {
+      const i = next++;
+      results[i] = await fetchOne(destinations[i]);
+    }
+  };
   try {
-    return await Promise.all(destinations.map(fetchOne));
+    await Promise.all(
+      Array.from({ length: Math.min(CONCURRENCY, destinations.length) }, worker),
+    );
   } catch (err) {
     logger.warn({ err }, 'TomTom routing failed; falling back');
-    return destinations.map(() => null);
   }
+  return results;
 }
