@@ -18,8 +18,9 @@
 **Geprek-Supply** is a decision-support & mapping system for a fried-chicken
 (*ayam geprek*) supply chain. From a single store origin, a courier can sweep a
 configurable radius and instantly see every nearby supplier — ranked
-cheapest-first — complete with **live distance, fuel-cost estimate, walking-step
-estimate, ETA, stock status, and a one-tap Google Maps route**.
+cheapest-first — complete with **live distance, GoRide delivery-cost estimate,
+traffic-aware ETA, supplier rating, operating hours, stock status, and a one-tap
+Google Maps route**.
 
 What started as a single static HTML prototype has been re-engineered into a
 **typed full-stack monorepo**: a **React 18 + TypeScript (Vite)** client talking
@@ -71,11 +72,12 @@ This repository is published as **Open Source for Educational Analysis**.
 
 | Layer | Implementation Details |
 | :--- | :--- |
-| **Frontend** | React 18 + TypeScript, Vite, Tailwind CSS, React Router, TanStack Query (server state), Zustand (UI/session state), React-Leaflet maps. |
+| **Frontend** | React 18 + TypeScript, Vite, Tailwind CSS, React Router, TanStack Query (server state), Zustand (UI/session state), **MapLibre GL** maps (CARTO basemap). |
 | **Backend** | Node.js + Express + TypeScript, layered **routes → controllers → services → middleware**, Pino structured logging, Helmet, CORS allow-list, rate limiting. |
 | **Database** | Prisma ORM with **SQLite** by default (zero external setup) — type-safe queries, migrations, and seeding. Portable to MySQL/PostgreSQL via one line. |
 | **Validation** | Zod schemas guarding every request (params, query, and body). |
-| **Auth** | Server-side admin gate — stock mutations are re-verified against `ADMIN_EMAIL` on the server, never trusting the client UI alone. |
+| **Auth** | Server-side admin gate — stock mutations are re-verified against `ADMIN_EMAIL` on the server (constant-time compare), with an **optional shared-secret token** second factor, a dedicated admin rate limiter, and an **audit log** of every change. |
+| **Routing/ETA** | **TomTom Routing API** (motorbike + live traffic) for real-time distance & ETA, falling back to OSRM / Haversine estimates when unavailable. |
 | **Architecture** | npm-workspaces monorepo (`frontend`, `backend`) with a shared, documented REST contract. |
 
 ---
@@ -196,12 +198,51 @@ Base URL: `http://localhost:4000/api`
 | :--- | :--- | :---: | :--- |
 | `GET` | `/health` | – | Service health check. |
 | `GET` | `/regions` | – | List all serviced regions with their store center. |
-| `GET` | `/regions/:key/suppliers?radius=15` | – | Suppliers within a radius (km), enriched with distance/fuel/steps and sorted cheapest-first. |
+| `GET` | `/regions/:key/suppliers?radius=15` | – | Suppliers within a radius (km), enriched with distance, delivery cost, and traffic-aware ETA, sorted cheapest-first. |
 | `GET` | `/suppliers` | – | Full inventory grouped by region (dashboard). |
 | `PATCH` | `/suppliers/:id` | 🔒 | Set a supplier's stock availability. |
 
 Admin requests must send an `x-admin-email` header matching `ADMIN_EMAIL`;
-the server returns **401** when missing and **403** when unauthorized.
+the server returns **401** when missing and **403** when unauthorized. When
+`ADMIN_TOKEN` is configured, a matching `x-admin-token` header is **also**
+required (**401** otherwise). Admin writes are additionally capped at **20
+req/min** and every successful change is written to the audit log.
+
+---
+
+## 🔒 Security
+
+Security is enforced **server-side** — the client UI is never trusted as the sole
+gatekeeper. Controls in place:
+
+| # | Control | Implementation | Status |
+| :-: | :--- | :--- | :---: |
+| 1 | **Authorization** | Stock mutations require `x-admin-email` = `ADMIN_EMAIL`, checked on the server with a **constant-time compare** (`timingSafeEqual`). Wrong/absent → **403/401**. | ✅ |
+| 2 | **Second factor (optional)** | When `ADMIN_TOKEN` is set, a matching `x-admin-token` header is also required — knowing the email alone is no longer enough. | ✅ |
+| 3 | **Input validation** | **Zod** validates every param, query, and body before it reaches business logic; JSON body capped at **100 kb**. | ✅ |
+| 4 | **Injection safety** | All DB access goes through **Prisma** (parameterized) — no raw SQL string building. | ✅ |
+| 5 | **Rate limiting** | Global **120 req/min** on `/api`, plus a stricter **20 req/min** limiter on admin mutations. | ✅ |
+| 6 | **Security headers** | **Helmet** sets hardened HTTP headers; `x-powered-by` disabled. | ✅ |
+| 7 | **CORS** | Explicit **allow-list** (`CORS_ORIGINS`) — only trusted origins may call the API. | ✅ |
+| 8 | **Audit trail** | Every stock change is logged (admin email, supplier id, new status) via **Pino** for traceability. | ✅ |
+| 9 | **Error hygiene** | Central error handler returns a generic **500** and never leaks stack traces to clients. | ✅ |
+| 10 | **Secret hygiene** | `TOMTOM_API_KEY` / `ADMIN_TOKEN` live in `.env` (git-ignored); env is validated by Zod at boot. | ✅ |
+
+### Approval status
+
+**Prototype: APPROVED ✅** — for an educational prototype, authorization,
+integrity, availability, and confidentiality controls are all enforced at the
+server (aligned with COBIT / ISO 27002 principles).
+
+**Production hardening (recommended before public deployment):**
+
+- 🔑 Replace the email gate with real authentication (**JWT / OAuth / Firebase Auth**);
+  enable `ADMIN_TOKEN` as an interim measure.
+- 🔐 Terminate **HTTPS** at a reverse proxy (TLS/HSTS) and set `NODE_ENV=production`.
+- 👥 Add proper **user accounts & roles** if more than one admin is needed.
+
+> These map directly to the *Audit Sistem Informasi* findings in the project
+> documentation — the current gaps are **known and documented**, not overlooked.
 
 ---
 

@@ -5,6 +5,9 @@ import type {
 } from '@/types';
 
 const BASE_URL = import.meta.env.VITE_API_URL ?? '/api';
+// Optional shared-secret second factor for admin writes. Sent only when set,
+// and must match the backend's ADMIN_TOKEN. Unset in the prototype (email gate).
+const ADMIN_TOKEN = import.meta.env.VITE_ADMIN_TOKEN as string | undefined;
 
 interface ApiEnvelope<T> {
   data: T;
@@ -50,7 +53,10 @@ export const api = {
   setSupplierStock: (id: number, inStock: boolean, adminEmail: string) =>
     request<{ id: number; name: string; inStock: boolean }>(`/suppliers/${id}`, {
       method: 'PATCH',
-      headers: { 'x-admin-email': adminEmail },
+      headers: {
+        'x-admin-email': adminEmail,
+        ...(ADMIN_TOKEN ? { 'x-admin-token': ADMIN_TOKEN } : {}),
+      },
       body: JSON.stringify({ inStock }),
     }),
 };

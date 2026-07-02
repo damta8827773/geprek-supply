@@ -10,6 +10,10 @@ const envSchema = z.object({
   // Optional: enables real-time, traffic-aware ETA via TomTom Routing.
   // When empty, the app falls back to OSRM (road distance, no live traffic).
   TOMTOM_API_KEY: z.string().optional(),
+  // Optional second factor for admin mutations. When set, the admin must also
+  // send a matching `x-admin-token` header (email alone is no longer enough).
+  // Leave empty to keep the simple email gate (prototype default).
+  ADMIN_TOKEN: z.string().optional(),
 });
 
 const parsed = envSchema.safeParse(process.env);

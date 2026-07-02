@@ -17,7 +17,7 @@ export function createApp() {
     cors({
       origin: env.corsOrigins,
       methods: ['GET', 'POST', 'PATCH', 'DELETE'],
-      allowedHeaders: ['Content-Type', 'x-admin-email'],
+      allowedHeaders: ['Content-Type', 'x-admin-email', 'x-admin-token'],
     }),
   );
   app.use(express.json({ limit: '100kb' }));
