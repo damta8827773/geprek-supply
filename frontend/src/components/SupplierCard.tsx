@@ -3,7 +3,7 @@ import { Bike, Clock, Crown, Navigation, Star, Timer } from 'lucide-react';
 import type { DeliveryTier, LatLng, Supplier } from '@/types';
 import { useDictionary } from '@/store/uiStore';
 import { formatKm, formatRupiah } from '@/lib/format';
-import { productEmoji } from '@/lib/product';
+import ProductThumb from '@/components/ProductThumb';
 
 const COST_COLOR: Record<DeliveryTier, string> = {
   low: 'text-emerald-500',
@@ -58,11 +58,12 @@ export default function SupplierCard({
         )}
         aria-hidden
       >
-        {s.imageUrl ? (
-          <img src={s.imageUrl} alt={s.material} className="h-full w-full object-cover" />
-        ) : (
-          <span>{productEmoji(s.material)}</span>
-        )}
+        <ProductThumb
+          material={s.material}
+          src={s.imageUrl}
+          className="h-full w-full object-cover"
+          emojiClassName="text-[2.6rem]"
+        />
       </div>
 
       {/* RIGHT — info */}

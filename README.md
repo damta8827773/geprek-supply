@@ -93,7 +93,11 @@ This repository is published as **Open Source for Educational Analysis**.
 - **🧭 One-Tap Google Maps** — deep-links straight into turn-by-turn directions
   (disabled for out-of-stock suppliers).
 - **🛡️ Owner Dashboard** — toggle stock availability in real time; changes sync
-  instantly back to the courier map.
+  instantly back to the courier map. Each supplier shows its **region, coordinates,
+  and a view-on-map link** so the owner can verify locations at a glance.
+- **📸 Real Product Photos** — each material shows a real photo (CC0 images in
+  `frontend/public/products/`, swappable for your own), with a graceful emoji
+  fallback if an image fails to load.
 - **🌗 Theme Switcher** — seamless Dark (neon) / Light mode, persisted locally.
 - **🌐 Bilingual (i18n)** — built-in Indonesian 🇮🇩 & English 🇬🇧 support.
 - **📱 Fully Responsive** — split map/sidebar layout that reflows for mobile.

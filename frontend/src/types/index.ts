@@ -56,6 +56,8 @@ export interface AdminSupplier {
   unit: string;
   price: number;
   icon: string;
+  lat: number;
+  lng: number;
   openHour: number;
   closeHour: number;
   inStock: boolean;

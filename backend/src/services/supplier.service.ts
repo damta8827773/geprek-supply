@@ -107,6 +107,8 @@ export async function listAllSuppliersByRegion() {
       unit: s.unit,
       price: s.price,
       icon: s.icon,
+      lat: s.lat,
+      lng: s.lng,
       openHour: s.openHour,
       closeHour: s.closeHour,
       inStock: s.inStock,

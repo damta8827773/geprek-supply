@@ -6,12 +6,14 @@ import { useAllSuppliers, useSetStock } from '@/hooks/useSuppliers';
 import { useAdminStore } from '@/store/adminStore';
 import { useDictionary } from '@/store/uiStore';
 import { formatRupiah } from '@/lib/format';
-import { productEmoji } from '@/lib/product';
+import ProductThumb from '@/components/ProductThumb';
 
-/** Only this email may access the admin dashboard (matches the server's ADMIN_EMAIL). */
-const ADMIN_EMAIL = (import.meta.env.VITE_ADMIN_EMAIL ?? 'damtafaiz@gmail.com')
-  .trim()
-  .toLowerCase();
+/** Emails allowed into the admin dashboard (comma-separated; matches the server's ADMIN_EMAIL). */
+const ADMIN_EMAILS = ((import.meta.env.VITE_ADMIN_EMAIL as string | undefined) ??
+  'damtafaiz@gmail.com')
+  .split(',')
+  .map((e) => e.trim().toLowerCase())
+  .filter(Boolean);
 
 function LoginCard() {
   const t = useDictionary();
@@ -19,7 +21,7 @@ function LoginCard() {
   const [email, setEmail] = useState('');
 
   const submit = () => {
-    if (email.trim().toLowerCase() !== ADMIN_EMAIL) {
+    if (!ADMIN_EMAILS.includes(email.trim().toLowerCase())) {
       alert(t.accessDenied);
       return;
     }
@@ -122,8 +124,12 @@ function Dashboard() {
                     className="card-hover animate-slide-up flex items-center justify-between gap-2 rounded-xl border border-slate-200 bg-white p-3 shadow-sm dark:border-slate-700 dark:bg-slate-800"
                   >
                     <div className="flex min-w-0 items-center gap-2">
-                      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-orange-100 text-lg dark:bg-orange-900/30">
-                        {productEmoji(s.material)}
+                      <span className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-orange-100 text-lg dark:bg-orange-900/30">
+                        <ProductThumb
+                          material={s.material}
+                          className="h-full w-full object-cover"
+                          emojiClassName="text-lg"
+                        />
                       </span>
                       <div className="min-w-0">
                         <p className="truncate text-sm font-bold">{s.name}</p>
@@ -139,6 +145,16 @@ function Dashboard() {
                           {String(s.openHour).padStart(2, '0')}.00–
                           {String(s.closeHour).padStart(2, '0')}.00
                         </p>
+                        <a
+                          href={`https://www.google.com/maps/search/?api=1&query=${s.lat},${s.lng}`}
+                          target="_blank"
+                          rel="noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                          className="mt-0.5 flex items-center gap-1 text-[9px] font-medium text-sky-500 hover:underline"
+                          title="Lihat lokasi supplier di peta"
+                        >
+                          <MapPin size={9} /> {s.lat.toFixed(4)}, {s.lng.toFixed(4)}
+                        </a>
                       </div>
                     </div>
                     <button
@@ -168,7 +184,7 @@ function Dashboard() {
 
 export default function AdminPage() {
   const email = useAdminStore((s) => s.email);
-  const isAdmin = !!email && email.trim().toLowerCase() === ADMIN_EMAIL;
+  const isAdmin = !!email && ADMIN_EMAILS.includes(email.trim().toLowerCase());
 
   return (
     <div className="flex h-[100dvh] w-full flex-col bg-slate-100 dark:bg-slate-900">

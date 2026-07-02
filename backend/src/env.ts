@@ -6,7 +6,8 @@ const envSchema = z.object({
   PORT: z.coerce.number().int().positive().default(4000),
   DATABASE_URL: z.string().min(1, 'DATABASE_URL is required'),
   CORS_ORIGINS: z.string().default('http://localhost:5173'),
-  ADMIN_EMAIL: z.string().email().default('damtafaiz@gmail.com'),
+  // One or more admin emails allowed to mutate stock (comma-separated).
+  ADMIN_EMAIL: z.string().min(1).default('damtafaiz@gmail.com'),
   // Optional: enables real-time, traffic-aware ETA via TomTom Routing.
   // When empty, the app falls back to OSRM (road distance, no live traffic).
   TOMTOM_API_KEY: z.string().optional(),
@@ -29,5 +30,9 @@ export const env = {
   isProd: parsed.data.NODE_ENV === 'production',
   corsOrigins: parsed.data.CORS_ORIGINS.split(',')
     .map((o) => o.trim())
+    .filter(Boolean),
+  // Normalised list of authorised admin emails (lower-cased, comma-separated).
+  adminEmails: parsed.data.ADMIN_EMAIL.split(',')
+    .map((e) => e.trim().toLowerCase())
     .filter(Boolean),
 };
