@@ -11,13 +11,19 @@ export function productEmoji(material: string): string {
   if (m.includes('bawang')) return '🧅';
   if (m.includes('lalapan') || m.includes('sayur') || m.includes('timun') || m.includes('kol'))
     return '🥬';
+  if (m.includes('cup')) return '🥤';
+  if (m.includes('styrofoam') || m.includes('sterofoam')) return '🍱';
+  if (m.includes('kertas')) return '📄';
+  if (m.includes('kantong')) return '🛍️';
+  if (m.includes('sambel') || m.includes('sambal')) return '🧂';
   if (m.includes('kemasan') || m.includes('box') || m.includes('dus')) return '📦';
   return '🛒';
 }
 
 /**
  * Maps a material to a real product photo stored in `public/products/`.
- * Photos are CC0 (public-domain) images; swap them for your own anytime.
+ * Photos are openly-licensed stock images (via Openverse); swap them for your
+ * own product photos anytime — just keep the same file name.
  */
 export function productImage(material: string): string {
   const m = material.toLowerCase();
@@ -32,6 +38,11 @@ export function productImage(material: string): string {
   else if (m.includes('bawang')) slug = 'bawang';
   else if (m.includes('lalapan') || m.includes('sayur') || m.includes('timun') || m.includes('kol'))
     slug = 'sayur';
+  else if (m.includes('cup')) slug = 'cupsambel';
+  else if (m.includes('styrofoam') || m.includes('sterofoam')) slug = 'styrofoam';
+  else if (m.includes('kertas')) slug = 'kertasnasi';
+  else if (m.includes('kantong')) slug = 'kantong';
+  else if (m.includes('sambel') || m.includes('sambal')) slug = 'plastiksambel';
   else if (m.includes('kemasan') || m.includes('box') || m.includes('dus')) slug = 'kemasan';
   return `/products/${slug}.jpg`;
 }

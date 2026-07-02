@@ -40,6 +40,12 @@ const regions: SeedRegion[] = [
       { name: 'Agen Minyak Cilincing', material: 'Minyak Goreng', unit: 'liter', lat: -6.108, lng: 106.91, price: 18000, icon: 'fa-bottle-droplet' },
       { name: 'Grosir Beras Priok', material: 'Beras', unit: 'kg', lat: -6.128, lng: 106.875, price: 13000, icon: 'fa-bowl-rice' },
       { name: 'Agen Bawang Pasar Ular', material: 'Bawang Putih', unit: 'kg', lat: -6.133, lng: 106.882, price: 40000, icon: 'fa-seedling' },
+      // Packaging supplies (kemasan) — example price/location data, edit as needed.
+      { name: 'Toko Kemasan Priok', material: 'Styrofoam 19x13x7', unit: 'isi 50 pcs', lat: -6.121, lng: 106.885, price: 22000, icon: 'fa-box-open' },
+      { name: 'Grosir Kertas Nasi Priok', material: 'Kertas Nasi', unit: 'pak isi 250', lat: -6.117, lng: 106.881, price: 15000, icon: 'fa-scroll' },
+      { name: 'Toko Plastik Enggano', material: 'Plastik Sambel 6x20', unit: 'pak isi 100', lat: -6.123, lng: 106.887, price: 8000, icon: 'fa-bag-shopping' },
+      { name: 'Toko Cup Sambel Priok', material: 'Cup Sambel', unit: 'isi 50 pcs', lat: -6.126, lng: 106.883, price: 10000, icon: 'fa-whiskey-glass' },
+      { name: 'Grosir Kantong Plastik Priok', material: 'Plastik Kantong 25', unit: 'pak isi 100', lat: -6.119, lng: 106.879, price: 13000, icon: 'fa-bag-shopping' },
     ],
   },
   {
