@@ -40,18 +40,6 @@ const regions: SeedRegion[] = [
       { name: 'Agen Minyak Cilincing', material: 'Minyak Goreng', unit: 'liter', lat: -6.108, lng: 106.91, price: 18000, icon: 'fa-bottle-droplet' },
       { name: 'Grosir Beras Priok', material: 'Beras', unit: 'kg', lat: -6.128, lng: 106.875, price: 13000, icon: 'fa-bowl-rice' },
       { name: 'Agen Bawang Pasar Ular', material: 'Bawang Putih', unit: 'kg', lat: -6.133, lng: 106.882, price: 40000, icon: 'fa-seedling' },
-      // Packaging supplies (kemasan) — example price/location data, edit as needed.
-      { name: 'Toko Kemasan Priok', material: 'Styrofoam 19x13x7', unit: 'isi 50 pcs', lat: -6.121, lng: 106.885, price: 22000, icon: 'fa-box-open' },
-      { name: 'Grosir Kertas Nasi Priok', material: 'Kertas Nasi', unit: 'pak isi 250', lat: -6.117, lng: 106.881, price: 15000, icon: 'fa-scroll' },
-      { name: 'Toko Plastik Enggano', material: 'Plastik Sambel 6x20', unit: 'pak isi 100', lat: -6.123, lng: 106.887, price: 8000, icon: 'fa-bag-shopping' },
-      { name: 'Toko Cup Sambel Priok', material: 'Cup Sambel', unit: 'isi 50 pcs', lat: -6.126, lng: 106.883, price: 10000, icon: 'fa-whiskey-glass' },
-      { name: 'Grosir Kantong Plastik Priok', material: 'Plastik Kantong 25', unit: 'pak isi 100', lat: -6.119, lng: 106.879, price: 13000, icon: 'fa-bag-shopping' },
-      // Seasonings / other staples (bumbu) — example price/location data, edit as needed.
-      { name: 'Toko Garam Priok', material: 'Garam Beryodium', unit: 'bungkus 500 g', lat: -6.120, lng: 106.884, price: 5000, icon: 'fa-cube' },
-      { name: 'Grosir Bumbu Priok', material: 'Penyedap Rasa Masako', unit: 'pak 100 g', lat: -6.122, lng: 106.886, price: 18000, icon: 'fa-bowl-food' },
-      { name: 'Toko Baking Priok', material: 'Baking Powder', unit: 'kaleng', lat: -6.124, lng: 106.888, price: 12000, icon: 'fa-jar' },
-      { name: 'Toko Tepung Tapioka Priok', material: 'Tepung Tapioka', unit: 'kg', lat: -6.116, lng: 106.880, price: 11000, icon: 'fa-wheat-awn' },
-      { name: 'Toko Maizena Priok', material: 'Tepung Maizena', unit: 'kg', lat: -6.118, lng: 106.878, price: 16000, icon: 'fa-wheat-awn' },
     ],
   },
   {
@@ -101,6 +89,35 @@ const regions: SeedRegion[] = [
   },
 ];
 
+// Packaging & seasoning products every kecamatan carries. Names/coords are
+// derived per region; prices are example data — edit freely.
+const COMMON_PRODUCTS: { shop: string; material: string; unit: string; price: number; icon: string }[] = [
+  { shop: 'Toko Kemasan', material: 'Styrofoam 19x13x7', unit: 'isi 50 pcs', price: 22000, icon: 'fa-box-open' },
+  { shop: 'Grosir Kertas Nasi', material: 'Kertas Nasi', unit: 'pak isi 250', price: 15000, icon: 'fa-scroll' },
+  { shop: 'Toko Plastik', material: 'Plastik Sambel 6x20', unit: 'pak isi 100', price: 8000, icon: 'fa-bag-shopping' },
+  { shop: 'Toko Cup Sambel', material: 'Cup Sambel', unit: 'isi 50 pcs', price: 10000, icon: 'fa-whiskey-glass' },
+  { shop: 'Grosir Kantong Plastik', material: 'Plastik Kantong 25', unit: 'pak isi 100', price: 13000, icon: 'fa-bag-shopping' },
+  { shop: 'Toko Garam', material: 'Garam Beryodium', unit: 'bungkus 500 g', price: 5000, icon: 'fa-cube' },
+  { shop: 'Grosir Bumbu', material: 'Penyedap Rasa Masako', unit: 'pak 100 g', price: 18000, icon: 'fa-bowl-food' },
+  { shop: 'Toko Baking', material: 'Baking Powder', unit: 'kaleng', price: 12000, icon: 'fa-jar' },
+  { shop: 'Toko Tepung Tapioka', material: 'Tepung Tapioka', unit: 'kg', price: 11000, icon: 'fa-wheat-awn' },
+  { shop: 'Toko Maizena', material: 'Tepung Maizena', unit: 'kg', price: 16000, icon: 'fa-wheat-awn' },
+];
+
+/** Builds the common packaging/seasoning suppliers for a region, spread near its center. */
+function commonProductsFor(region: SeedRegion): SeedSupplier[] {
+  return COMMON_PRODUCTS.map((p, i) => ({
+    name: `${p.shop} ${region.name}`,
+    material: p.material,
+    unit: p.unit,
+    // Spread points in a small ring around the region center (still within the kecamatan).
+    lat: Number((region.centerLat + Math.cos(i) * 0.004).toFixed(4)),
+    lng: Number((region.centerLng + Math.sin(i) * 0.004).toFixed(4)),
+    price: p.price,
+    icon: p.icon,
+  }));
+}
+
 async function main() {
   console.log('🌱 Seeding database...');
 
@@ -110,11 +127,14 @@ async function main() {
 
   for (const region of regions) {
     const { suppliers, ...regionData } = region;
+    // Every kecamatan carries the region-specific staples PLUS the common
+    // packaging/seasoning products, so those are available everywhere.
+    const allSuppliers = [...suppliers, ...commonProductsFor(region)];
     const created = await prisma.region.create({
       data: {
         ...regionData,
         suppliers: {
-          create: suppliers.map((s) => {
+          create: allSuppliers.map((s) => {
             // Markets/wholesalers/farms open early; agents/shops open later.
             const early = /(pasar|grosir|kebun)/i.test(s.name);
             return {
