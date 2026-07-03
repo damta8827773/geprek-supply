@@ -91,7 +91,12 @@ function Dashboard() {
         }
         setRegion(bestKey);
       },
-      (err) => alert('Gagal membaca lokasi: ' + err.message),
+      (err) =>
+        alert(
+          err.code === err.PERMISSION_DENIED
+            ? 'Izin lokasi ditolak. Klik ikon lokasi di address bar browser, pilih "Izinkan", muat ulang, lalu coba lagi.'
+            : 'Gagal membaca lokasi: ' + err.message,
+        ),
       { enableHighAccuracy: true, timeout: 8000 },
     );
   };
