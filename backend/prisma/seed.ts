@@ -46,6 +46,12 @@ const regions: SeedRegion[] = [
       { name: 'Toko Plastik Enggano', material: 'Plastik Sambel 6x20', unit: 'pak isi 100', lat: -6.123, lng: 106.887, price: 8000, icon: 'fa-bag-shopping' },
       { name: 'Toko Cup Sambel Priok', material: 'Cup Sambel', unit: 'isi 50 pcs', lat: -6.126, lng: 106.883, price: 10000, icon: 'fa-whiskey-glass' },
       { name: 'Grosir Kantong Plastik Priok', material: 'Plastik Kantong 25', unit: 'pak isi 100', lat: -6.119, lng: 106.879, price: 13000, icon: 'fa-bag-shopping' },
+      // Seasonings / other staples (bumbu) — example price/location data, edit as needed.
+      { name: 'Toko Garam Priok', material: 'Garam Beryodium', unit: 'bungkus 500 g', lat: -6.120, lng: 106.884, price: 5000, icon: 'fa-cube' },
+      { name: 'Grosir Bumbu Priok', material: 'Penyedap Rasa Masako', unit: 'pak 100 g', lat: -6.122, lng: 106.886, price: 18000, icon: 'fa-bowl-food' },
+      { name: 'Toko Baking Priok', material: 'Baking Powder', unit: 'kaleng', lat: -6.124, lng: 106.888, price: 12000, icon: 'fa-jar' },
+      { name: 'Toko Tepung Tapioka Priok', material: 'Tepung Tapioka', unit: 'kg', lat: -6.116, lng: 106.880, price: 11000, icon: 'fa-wheat-awn' },
+      { name: 'Toko Maizena Priok', material: 'Tepung Maizena', unit: 'kg', lat: -6.118, lng: 106.878, price: 16000, icon: 'fa-wheat-awn' },
     ],
   },
   {
