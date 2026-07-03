@@ -2,8 +2,8 @@
   "name": "geprek-supply",
   "version": "1.0.0",
   "private": true,
-  "description": "Geprek-Supply Smart Routing — a full-stack supplier mapping & smart-radius routing platform for a fried-chicken (ayam geprek) supply chain.",
-  "author": "Damta Noviyan Muhamad Faiz <damtafaiz@gmail.com>",
+  "description": "Geprek-Supply Smart Routing - a full-stack supplier mapping & smart-radius routing platform for a fried-chicken (ayam geprek) supply chain.",
+  "author": "Damta Noviyan Muhamad Faiz",
   "license": "LicenseRef-Educational",
   "engines": {
     "node": ">=20"

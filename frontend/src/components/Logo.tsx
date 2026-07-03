@@ -6,7 +6,7 @@ interface LogoProps {
 
 /**
  * Interactive SVG brand mark: a map/location pin holding a fried-chicken
- * drumstick — i.e. the *location of ayam-geprek supplies*. On hover the badge
+ * drumstick - i.e. the *location of ayam-geprek supplies*. On hover the badge
  * lifts/tilts and emits a pulse ring (pure CSS, scalable & crisp).
  */
 export default function Logo({ size = 32, className = '' }: LogoProps) {

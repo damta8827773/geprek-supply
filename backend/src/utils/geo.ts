@@ -21,7 +21,7 @@ export function haversineKm(lat1: number, lng1: number, lat2: number, lng2: numb
 
 // --- Gojek GoRide tariff (motorbike, Jabodetabek / "Zona II", 2025) ---
 // Using the regulated lower-bound (batas bawah) rate. The whole Jabodetabek area
-// shares one tariff, so cost depends on distance only — not on the kecamatan.
+// shares one tariff, so cost depends on distance only - not on the kecamatan.
 const GOJEK_RATE_PER_KM = 2550; // IDR per km (GoRide batas bawah, Zona II)
 const GOJEK_MINIMUM_FARE = 10200; // IDR minimum (biaya jasa minimal 4 km pertama)
 

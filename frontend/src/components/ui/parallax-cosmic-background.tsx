@@ -12,7 +12,7 @@ interface CosmicParallaxBgProps {
 
 /**
  * A cosmic parallax background with animated star layers and gravity text.
- * (From a 21st.dev component — space themed; kept available as a reusable UI
+ * (From a 21st.dev component - space themed; kept available as a reusable UI
  * piece. The accompanying styles live in `index.css` under `.cosmic-*`.)
  */
 export const CosmicParallaxBg: React.FC<CosmicParallaxBgProps> = ({

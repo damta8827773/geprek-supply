@@ -62,7 +62,7 @@ export function productEmoji(material: string): string {
 
 /**
  * Real product photo path for a material (stored in `public/products/`).
- * Swap the files for your own product photos anytime — just keep the file name.
+ * Swap the files for your own product photos anytime - just keep the file name.
  */
 export function productImage(material: string): string {
   return `/products/${categorySlug(material)}.jpg`;

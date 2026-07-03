@@ -16,7 +16,7 @@ const fmtHour = (h: number) => `${String(h).padStart(2, '0')}.00`;
 interface SupplierCardProps {
   supplier: Supplier;
   onSelect: (supplier: Supplier) => void;
-  /** Position in the list — drives the staggered entrance animation. */
+  /** Position in the list - drives the staggered entrance animation. */
   index?: number;
   /** Highlight as the cheapest available supplier. */
   best?: boolean;
@@ -48,7 +48,7 @@ export default function SupplierCard({
             : 'border-red-200 opacity-70 dark:border-red-900',
       )}
     >
-      {/* LEFT — product image panel */}
+      {/* LEFT - product image panel */}
       <div
         className={clsx(
           'flex w-[84px] shrink-0 items-center justify-center text-[2.6rem] leading-none',
@@ -66,7 +66,7 @@ export default function SupplierCard({
         />
       </div>
 
-      {/* RIGHT — info */}
+      {/* RIGHT - info */}
       <div className="min-w-0 flex-1 p-2.5">
         {best && (
           <span className="mb-1 inline-flex items-center gap-0.5 rounded-full bg-gradient-to-r from-amber-400 to-brand px-2 py-0.5 text-[8px] font-extrabold uppercase tracking-wide text-white">
@@ -116,7 +116,7 @@ export default function SupplierCard({
         {/* Operating hours + open/closed */}
         <div className="mt-1.5 flex items-center justify-between text-[9px]">
           <span className="flex items-center gap-1 text-slate-500 dark:text-slate-400">
-            <Clock size={10} /> {t.hoursLabel} {fmtHour(s.openHour)}–{fmtHour(s.closeHour)}
+            <Clock size={10} /> {t.hoursLabel} {fmtHour(s.openHour)}-{fmtHour(s.closeHour)}
           </span>
           <span
             className={clsx(

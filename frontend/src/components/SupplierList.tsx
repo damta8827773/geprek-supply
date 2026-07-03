@@ -8,7 +8,7 @@ interface SupplierListProps {
   suppliers: Supplier[];
   loading: boolean;
   onSelect: (supplier: Supplier) => void;
-  /** Store origin — used so the Google Maps route starts from the same point the system measures from. */
+  /** Store origin - used so the Google Maps route starts from the same point the system measures from. */
   origin: LatLng;
 }
 

@@ -12,7 +12,7 @@ export default defineConfig({
   },
   server: {
     port: 5173,
-    // Always use 5173 — fail loudly instead of silently hopping to 5174/5175,
+    // Always use 5173 - fail loudly instead of silently hopping to 5174/5175,
     // which makes the dev URL a confusing moving target.
     strictPort: true,
     // Allow serving files from the monorepo root. `strict: false` also keeps the

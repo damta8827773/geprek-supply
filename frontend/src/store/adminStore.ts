@@ -8,7 +8,7 @@ interface AdminState {
 }
 
 /**
- * Lightweight client session. The email is only a UI convenience — every
+ * Lightweight client session. The email is only a UI convenience - every
  * mutating request is re-verified server-side against ADMIN_EMAIL.
  */
 export const useAdminStore = create<AdminState>()(

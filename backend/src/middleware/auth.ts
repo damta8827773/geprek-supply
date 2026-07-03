@@ -3,7 +3,7 @@ import type { NextFunction, Request, Response } from 'express';
 import { env } from '../env.js';
 import { ApiError } from '../utils/ApiError.js';
 
-/** Constant-time string comparison — avoids leaking secrets via timing. */
+/** Constant-time string comparison - avoids leaking secrets via timing. */
 function safeEqual(a: string, b: string): boolean {
   const ab = Buffer.from(a);
   const bb = Buffer.from(b);

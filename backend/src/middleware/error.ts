@@ -7,7 +7,7 @@ export function notFoundHandler(req: Request, _res: Response, next: NextFunction
   next(ApiError.notFound(`Route not found: ${req.method} ${req.originalUrl}`));
 }
 
-/** Central error handler — converts thrown errors into a consistent JSON shape. */
+/** Central error handler - converts thrown errors into a consistent JSON shape. */
 export function errorHandler(
   err: unknown,
   _req: Request,

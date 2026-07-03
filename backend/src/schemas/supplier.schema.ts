@@ -15,7 +15,7 @@ export const supplierIdParamsSchema = z.object({
   id: z.coerce.number().int().positive(),
 });
 
-/** `PATCH /api/suppliers/:id` body — toggle or set stock availability. */
+/** `PATCH /api/suppliers/:id` body - toggle or set stock availability. */
 export const updateStockSchema = z.object({
   inStock: z.boolean(),
 });

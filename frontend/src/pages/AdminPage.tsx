@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Check, Clock, LogOut, MapPin, Search, ShieldCheck, X } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Check, Clock, LocateFixed, LogOut, MapPin, Search, ShieldCheck, X } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import { AuroraBackground } from '@/components/ui/aurora-background';
 import { useAllSuppliers, useSetStock } from '@/hooks/useSuppliers';
@@ -10,7 +10,7 @@ import ProductThumb from '@/components/ProductThumb';
 
 /** Emails allowed into the admin dashboard (comma-separated; matches the server's ADMIN_EMAIL). */
 const ADMIN_EMAILS = ((import.meta.env.VITE_ADMIN_EMAIL as string | undefined) ??
-  'damtafaiz@gmail.com')
+  'admin@example.com')
   .split(',')
   .map((e) => e.trim().toLowerCase())
   .filter(Boolean);
@@ -60,8 +60,41 @@ function Dashboard() {
   const { data: groups = [], isLoading } = useAllSuppliers();
   const setStock = useSetStock();
   const [q, setQ] = useState('');
-  const [region, setRegion] = useState('all');
+  const [region, setRegion] = useState('');
   const needle = q.trim().toLowerCase();
+
+  // Default to the first kecamatan (never show all at once by default).
+  useEffect(() => {
+    if (!region && groups.length > 0) setRegion(groups[0].key);
+  }, [groups, region]);
+
+  // Reads the admin's GPS location and switches to their nearest kecamatan.
+  const locateKecamatan = () => {
+    if (!('geolocation' in navigator)) {
+      alert('Peramban ini tidak mendukung deteksi lokasi.');
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const me = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+        let bestKey = region;
+        let best = Infinity;
+        for (const g of groups) {
+          if (g.suppliers.length === 0) continue;
+          const cLat = g.suppliers.reduce((a, s) => a + s.lat, 0) / g.suppliers.length;
+          const cLng = g.suppliers.reduce((a, s) => a + s.lng, 0) / g.suppliers.length;
+          const d = (cLat - me.lat) ** 2 + (cLng - me.lng) ** 2;
+          if (d < best) {
+            best = d;
+            bestKey = g.key;
+          }
+        }
+        setRegion(bestKey);
+      },
+      (err) => alert('Gagal membaca lokasi: ' + err.message),
+      { enableHighAccuracy: true, timeout: 8000 },
+    );
+  };
 
   const toggle = (id: number, current: boolean) => {
     setStock.mutate(
@@ -102,13 +135,21 @@ function Dashboard() {
           onChange={(e) => setRegion(e.target.value)}
           className="shrink-0 rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-orange-200 dark:border-slate-700 dark:bg-slate-800"
         >
-          <option value="all">Semua kecamatan</option>
           {groups.map((g) => (
             <option key={g.key} value={g.key}>
               {g.name}
             </option>
           ))}
+          <option value="all">Semua kecamatan</option>
         </select>
+        <button
+          type="button"
+          onClick={locateKecamatan}
+          title="Pilih kecamatan sesuai lokasi saya"
+          className="press flex shrink-0 items-center gap-1.5 rounded-xl border border-sky-200 bg-sky-50 px-3 py-2.5 text-sm font-bold text-sky-600 hover:bg-sky-100 dark:border-sky-900 dark:bg-sky-900/30 dark:text-sky-400"
+        >
+          <LocateFixed size={15} /> Kecamatan Saya
+        </button>
       </div>
 
       <div className="flex-1 overflow-y-auto rounded-2xl border border-slate-200 bg-white p-3 custom-scrollbar dark:border-slate-700 dark:bg-slate-800">
@@ -159,7 +200,7 @@ function Dashboard() {
                         </p>
                         <p className="flex items-center gap-1 text-[9px] text-slate-400">
                           <Clock size={9} />
-                          {String(s.openHour).padStart(2, '0')}.00–
+                          {String(s.openHour).padStart(2, '0')}.00-
                           {String(s.closeHour).padStart(2, '0')}.00
                         </p>
                         <a

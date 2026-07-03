@@ -2,12 +2,12 @@
 
 React 18 + TypeScript + Vite client.
 
-- **Routing** — React Router (`/` map, `/admin` dashboard).
-- **Server state** — TanStack Query (caching, invalidation).
-- **UI state** — Zustand (theme, language, admin session), persisted to
+- **Routing** - React Router (`/` map, `/admin` dashboard).
+- **Server state** - TanStack Query (caching, invalidation).
+- **UI state** - Zustand (theme, language, admin session), persisted to
   `localStorage`.
-- **Maps** — React-Leaflet with custom div-icon markers and a smart-radius circle.
-- **Styling** — Tailwind CSS with a custom `brand` palette, glassmorphism, and
+- **Maps** - React-Leaflet with custom div-icon markers and a smart-radius circle.
+- **Styling** - Tailwind CSS with a custom `brand` palette, glassmorphism, and
   class-based dark mode.
 
 ```

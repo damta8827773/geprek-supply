@@ -15,13 +15,13 @@ export async function getRegionSuppliers(req: Request, res: Response) {
   res.json({ data: result });
 }
 
-/** GET /api/suppliers — full inventory grouped by region (admin dashboard). */
+/** GET /api/suppliers - full inventory grouped by region (admin dashboard). */
 export async function getAllSuppliers(_req: Request, res: Response) {
   const data = await listAllSuppliersByRegion();
   res.json({ data });
 }
 
-/** PATCH /api/suppliers/:id — admin only. */
+/** PATCH /api/suppliers/:id - admin only. */
 export async function patchSupplierStock(req: Request, res: Response) {
   const { id } = req.params as unknown as { id: number };
   const { inStock } = req.body as UpdateStockInput;

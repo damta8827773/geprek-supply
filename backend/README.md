@@ -7,7 +7,7 @@ default).
 src/
 ├── routes/        Express routers (region, supplier, health)
 ├── controllers/   thin request/response handlers
-├── services/      business logic — smart routing & stock
+├── services/      business logic - smart routing & stock
 ├── middleware/    auth gate, Zod validation, error handling
 ├── schemas/       Zod request schemas
 ├── utils/         Haversine geo math, ApiError, asyncHandler

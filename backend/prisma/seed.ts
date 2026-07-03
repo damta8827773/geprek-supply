@@ -6,7 +6,7 @@ type Product = { shop: string; material: string; unit: string; price: number; ic
 type Region = { key: string; name: string; centerLat: number; centerLng: number };
 
 // One shared catalog so EVERY kecamatan carries the exact same products
-// (staples + seasoning + packaging). Prices are example data — edit freely.
+// (staples + seasoning + packaging). Prices are example data - edit freely.
 const PRODUCTS: Product[] = [
   { shop: 'Pasar Ayam', material: 'Ayam Potong', unit: 'kg', price: 32000, icon: 'fa-drumstick-bite' },
   { shop: 'Pasar Cabai', material: 'Cabai Rawit Merah', unit: 'kg', price: 54000, icon: 'fa-pepper-hot' },
@@ -49,7 +49,7 @@ function suppliersFor(region: Region) {
       lng: Number((region.centerLng + Math.sin(i) * 0.004).toFixed(4)),
       price: p.price,
       icon: p.icon,
-      // Example rating (4.0–4.8), deterministic & varied. Replace with real ratings later.
+      // Example rating (4.0-4.8), deterministic & varied. Replace with real ratings later.
       rating: Number((4.0 + ((p.price % 9) / 10)).toFixed(1)),
       openHour: early ? 5 : 7,
       closeHour: early ? 17 : 20,
@@ -76,7 +76,7 @@ async function main() {
       },
       include: { suppliers: true },
     });
-    console.log(`  ✓ ${created.name} — ${created.suppliers.length} suppliers`);
+    console.log(`  ✓ ${created.name} - ${created.suppliers.length} suppliers`);
   }
 
   console.log('✅ Seed complete.');

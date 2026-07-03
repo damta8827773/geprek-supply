@@ -9,7 +9,7 @@ interface AuroraBackgroundProps extends React.HTMLProps<HTMLDivElement> {
 /**
  * Animated "aurora" gradient backdrop (adapted from a 21st.dev / Aceternity
  * component). Re-tinted to the Geprek-Supply orange brand and made dependency
- * free (no framer-motion, no CSS-color-vars plugin — colors are inlined).
+ * free (no framer-motion, no CSS-color-vars plugin - colors are inlined).
  */
 export const AuroraBackground = ({
   className,
