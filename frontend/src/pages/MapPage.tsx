@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Search } from 'lucide-react';
+import { LocateFixed, Search } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import RegionTabs from '@/components/RegionTabs';
 import RadiusControl from '@/components/RadiusControl';
@@ -47,6 +47,33 @@ export default function MapPage() {
   const handleSearch = () => setAppliedRadius(radius);
   const handleSelect = (s: Supplier) => setFocus({ lat: s.lat, lng: s.lng });
 
+  // Reads the visitor's GPS location (asks permission), jumps to the nearest
+  // kecamatan, and flies the map to where they are.
+  const locateMe = () => {
+    if (!('geolocation' in navigator)) {
+      alert('Peramban ini tidak mendukung deteksi lokasi.');
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const me = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+        let nearest = regions[0];
+        let best = Infinity;
+        for (const r of regions) {
+          const d = (r.center.lat - me.lat) ** 2 + (r.center.lng - me.lng) ** 2;
+          if (d < best) {
+            best = d;
+            nearest = r;
+          }
+        }
+        if (nearest) setActiveKey(nearest.key);
+        setFocus(me);
+      },
+      (err) => alert('Gagal membaca lokasi: ' + err.message),
+      { enableHighAccuracy: true, timeout: 8000 },
+    );
+  };
+
   return (
     <div className="flex h-[100dvh] w-full flex-col overflow-hidden">
       <Navbar />
@@ -85,6 +112,13 @@ export default function MapPage() {
                 className="w-full rounded-lg border border-slate-200 bg-slate-50 py-2 pl-8 pr-3 text-xs focus:border-brand focus:outline-none focus:ring-2 focus:ring-orange-200 dark:border-slate-600 dark:bg-slate-700/60"
               />
             </div>
+            <button
+              type="button"
+              onClick={locateMe}
+              className="press mt-2 flex w-full items-center justify-center gap-1.5 rounded-lg border border-sky-200 bg-sky-50 py-2 text-xs font-bold text-sky-600 hover:bg-sky-100 dark:border-sky-900 dark:bg-sky-900/30 dark:text-sky-400"
+            >
+              <LocateFixed size={14} /> Gunakan Lokasi Saya
+            </button>
           </div>
 
           <div className="min-h-0 flex-1 overflow-y-auto bg-slate-50 custom-scrollbar dark:bg-slate-900">
