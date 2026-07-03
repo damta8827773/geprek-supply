@@ -6,7 +6,9 @@
 function categorySlug(material: string): string {
   const m = material.toLowerCase();
   if (m.includes('garam')) return 'garam';
-  if (m.includes('kaldu') || m.includes('penyedap') || m.includes('masako')) return 'masako';
+  // "Tepung Bumbu" (and kaldu/penyedap) use the Masako photo.
+  if (m.includes('bumbu') || m.includes('kaldu') || m.includes('penyedap') || m.includes('masako'))
+    return 'masako';
   if (m.includes('baking')) return 'bakingpowder';
   if (m.includes('tapioka') || m.includes('kanji')) return 'tapioka';
   if (m.includes('maizena')) return 'maizena';

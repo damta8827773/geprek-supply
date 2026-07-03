@@ -60,6 +60,7 @@ function Dashboard() {
   const { data: groups = [], isLoading } = useAllSuppliers();
   const setStock = useSetStock();
   const [q, setQ] = useState('');
+  const [region, setRegion] = useState('all');
   const needle = q.trim().toLowerCase();
 
   const toggle = (id: number, current: boolean) => {
@@ -86,21 +87,37 @@ function Dashboard() {
         </button>
       </div>
 
-      <div className="relative mb-3">
-        <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-        <input
-          value={q}
-          onChange={(e) => setQ(e.target.value)}
-          placeholder={t.searchPlaceholder}
-          className="w-full rounded-xl border border-slate-200 bg-white py-2.5 pl-9 pr-3 text-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-orange-200 dark:border-slate-700 dark:bg-slate-800"
-        />
+      <div className="mb-3 flex gap-2">
+        <div className="relative flex-1">
+          <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+          <input
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder={t.searchPlaceholder}
+            className="w-full rounded-xl border border-slate-200 bg-white py-2.5 pl-9 pr-3 text-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-orange-200 dark:border-slate-700 dark:bg-slate-800"
+          />
+        </div>
+        <select
+          value={region}
+          onChange={(e) => setRegion(e.target.value)}
+          className="shrink-0 rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-orange-200 dark:border-slate-700 dark:bg-slate-800"
+        >
+          <option value="all">Semua kecamatan</option>
+          {groups.map((g) => (
+            <option key={g.key} value={g.key}>
+              {g.name}
+            </option>
+          ))}
+        </select>
       </div>
 
       <div className="flex-1 overflow-y-auto rounded-2xl border border-slate-200 bg-white p-3 custom-scrollbar dark:border-slate-700 dark:bg-slate-800">
         {isLoading ? (
           <p className="p-4 text-sm text-slate-400">Loading…</p>
         ) : (
-          groups.map((group) => {
+          groups
+            .filter((g) => region === 'all' || g.key === region)
+            .map((group) => {
             const matched = group.suppliers.filter((s) =>
               `${s.name} ${s.material}`.toLowerCase().includes(needle),
             );

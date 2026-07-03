@@ -98,7 +98,7 @@ const COMMON_PRODUCTS: { shop: string; material: string; unit: string; price: nu
   { shop: 'Toko Cup Sambel', material: 'Cup Sambel', unit: 'isi 50 pcs', price: 10000, icon: 'fa-whiskey-glass' },
   { shop: 'Grosir Kantong Plastik', material: 'Plastik Kantong 25', unit: 'pak isi 100', price: 13000, icon: 'fa-bag-shopping' },
   { shop: 'Toko Garam', material: 'Garam Beryodium', unit: 'bungkus 500 g', price: 5000, icon: 'fa-cube' },
-  { shop: 'Grosir Bumbu', material: 'Penyedap Rasa Masako', unit: 'pak 100 g', price: 18000, icon: 'fa-bowl-food' },
+  { shop: 'Grosir Bumbu', material: 'Tepung Bumbu', unit: 'kg', price: 12000, icon: 'fa-bowl-food' },
   { shop: 'Toko Baking', material: 'Baking Powder', unit: 'kaleng', price: 12000, icon: 'fa-jar' },
   { shop: 'Toko Tepung Tapioka', material: 'Tepung Tapioka', unit: 'kg', price: 11000, icon: 'fa-wheat-awn' },
   { shop: 'Toko Maizena', material: 'Tepung Maizena', unit: 'kg', price: 16000, icon: 'fa-wheat-awn' },
