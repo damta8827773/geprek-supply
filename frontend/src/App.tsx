@@ -3,6 +3,8 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import { useUiStore } from '@/store/uiStore';
 import MapPage from '@/pages/MapPage';
 import NearbyPage from '@/pages/NearbyPage';
+import RegisterPage from '@/pages/RegisterPage';
+import LoginPage from '@/pages/LoginPage';
 import AdminPage from '@/pages/AdminPage';
 import NotFoundPage from '@/pages/NotFoundPage';
 
@@ -32,6 +34,8 @@ export default function App() {
     <Routes>
       <Route path="/" element={<MapPage />} />
       <Route path="/nearby" element={<NearbyPage />} />
+      <Route path="/daftar" element={<RegisterPage />} />
+      <Route path="/masuk" element={<LoginPage />} />
       {/* Direct-URL access to the dashboard; intentionally not linked in the public UI. */}
       <Route path="/admin" element={<AdminPage />} />
       <Route path="*" element={<NotFoundPage />} />

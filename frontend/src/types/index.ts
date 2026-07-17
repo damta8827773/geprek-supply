@@ -69,6 +69,35 @@ export interface NearbyResult {
   shops: NearbyShop[];
 }
 
+/** A registered shop owner (self-service supplier). No password on the client. */
+export interface Merchant {
+  id: number;
+  ownerName: string;
+  shopName: string;
+  email: string;
+  kecamatan: string;
+  kota: string | null;
+  kabupaten: string | null;
+  kodePos: string | null;
+  phone: string | null;
+  landmark: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface RegisterPayload {
+  ownerName: string;
+  shopName: string;
+  email: string;
+  password: string;
+  kecamatan: string;
+  kota?: string;
+  kabupaten?: string;
+  kodePos?: string;
+  phone?: string;
+  landmark?: string;
+}
+
 export interface AdminSupplier {
   id: number;
   name: string;

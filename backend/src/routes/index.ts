@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import regionRoutes from './region.routes.js';
 import supplierRoutes from './supplier.routes.js';
+import merchantRoutes from './merchant.routes.js';
 import { getNearby, getNearbyByPlace } from '../controllers/supplier.controller.js';
 import { validate } from '../middleware/validate.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
@@ -16,5 +17,6 @@ router.get('/nearby', validate(nearbyQuerySchema, 'query'), asyncHandler(getNear
 router.get('/nearby-place', validate(nearbyPlaceQuerySchema, 'query'), asyncHandler(getNearbyByPlace));
 router.use('/regions', regionRoutes);
 router.use('/suppliers', supplierRoutes);
+router.use('/merchants', merchantRoutes);
 
 export default router;
