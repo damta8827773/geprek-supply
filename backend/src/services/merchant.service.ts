@@ -2,6 +2,7 @@ import bcrypt from 'bcryptjs';
 import type { Merchant } from '@prisma/client';
 import { prisma } from '../lib/prisma.js';
 import { ApiError } from '../utils/ApiError.js';
+import { geocodePlace } from '../utils/geocode.js';
 import type { LoginInput, RegisterInput } from '../schemas/merchant.schema.js';
 
 /** Strips the password hash before returning a merchant to the client. */
@@ -26,8 +27,13 @@ export async function registerMerchant(input: RegisterInput) {
   if (shopTaken) throw ApiError.conflict('Nama toko sudah dipakai, pilih nama lain.');
 
   const password = await bcrypt.hash(input.password, 10);
+  // Best-effort geocode so the shop's products can appear on the map.
+  const area = [input.kecamatan, input.kota ?? input.kabupaten, 'Indonesia']
+    .filter(Boolean)
+    .join(', ');
+  const geo = await geocodePlace(area);
   const merchant = await prisma.merchant.create({
-    data: { ...input, email, shopName, password },
+    data: { ...input, email, shopName, password, lat: geo?.lat ?? null, lng: geo?.lng ?? null },
   });
   return toPublic(merchant);
 }

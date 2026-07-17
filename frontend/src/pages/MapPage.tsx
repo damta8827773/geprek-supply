@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import { Globe, LocateFixed, Search } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import RegionTabs from '@/components/RegionTabs';
@@ -8,6 +9,7 @@ import SupplierList from '@/components/SupplierList';
 import MapView from '@/components/MapView';
 import { useRegionSuppliers, useRegions } from '@/hooks/useSuppliers';
 import { useDictionary } from '@/store/uiStore';
+import { api } from '@/lib/api';
 import type { LatLng, Supplier } from '@/types';
 
 export default function MapPage() {
@@ -33,7 +35,17 @@ export default function MapPage() {
     return r?.center ?? { lat: -6.1194, lng: 106.8832 };
   }, [data, regions, activeKey]);
 
-  const suppliers: Supplier[] = data?.suppliers ?? [];
+  // Registered shops' products near this region center, merged in with curated data.
+  const { data: shopProducts = [] } = useQuery({
+    queryKey: ['shop-products', center.lat, center.lng, appliedRadius],
+    queryFn: () => api.getShopProductsNear(center.lat, center.lng, appliedRadius),
+    enabled: !!activeKey,
+  });
+
+  const suppliers: Supplier[] = useMemo(
+    () => [...(data?.suppliers ?? []), ...shopProducts],
+    [data, shopProducts],
+  );
   const visibleSuppliers = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return suppliers;

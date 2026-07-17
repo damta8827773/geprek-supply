@@ -8,6 +8,7 @@ import type {
   Region,
   RegionSuppliersResponse,
   RegisterPayload,
+  Supplier,
 } from '@/types';
 
 const BASE_URL = import.meta.env.VITE_API_URL ?? '/api';
@@ -61,6 +62,9 @@ export const api = {
 
   getNearbyByPlace: (q: string, radiusKm: number) =>
     request<NearbyResult>(`/nearby-place?q=${encodeURIComponent(q)}&radius=${radiusKm}`),
+
+  getShopProductsNear: (lat: number, lng: number, radiusKm: number) =>
+    request<Supplier[]>(`/shop-products?lat=${lat}&lng=${lng}&radius=${radiusKm}`),
 
   registerMerchant: (payload: RegisterPayload) =>
     request<Merchant>('/merchants/register', { method: 'POST', body: JSON.stringify(payload) }),

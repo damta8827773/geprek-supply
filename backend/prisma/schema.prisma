@@ -61,6 +61,8 @@ model Merchant {
   kodePos   String?
   phone     String?
   landmark  String? // "patokan" / nearest landmark
+  lat       Float? // geocoded from the address (for placing products on the map)
+  lng       Float?
   products  Product[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

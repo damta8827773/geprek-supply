@@ -40,6 +40,8 @@ export interface Supplier {
   deliveryTier: DeliveryTier;
   /** Estimated arrival time in minutes. */
   etaMinutes: number;
+  /** True when this came from a self-registered shop (not curated seed data). */
+  registered?: boolean;
 }
 
 export interface RegionSuppliersResponse {

@@ -77,7 +77,14 @@ export default function SupplierCard({
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">
             <h3 className="truncate text-xs font-bold leading-tight">{s.name}</h3>
-            <p className="truncate text-[10px] text-slate-500 dark:text-slate-400">{s.material}</p>
+            <p className="truncate text-[10px] text-slate-500 dark:text-slate-400">
+              {s.material}
+              {s.registered && (
+                <span className="ml-1 rounded bg-sky-100 px-1 py-0.5 text-[8px] font-bold uppercase text-sky-600 dark:bg-sky-900/40 dark:text-sky-400">
+                  Toko Terdaftar
+                </span>
+              )}
+            </p>
           </div>
           <div className="flex shrink-0 flex-col items-end gap-1">
             <span className="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] font-bold dark:bg-slate-700">

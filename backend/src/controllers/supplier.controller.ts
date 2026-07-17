@@ -5,6 +5,7 @@ import {
   setSupplierStock,
 } from '../services/supplier.service.js';
 import { getNearbyShops } from '../services/nearby.service.js';
+import { getShopProductsNear } from '../services/shopProducts.service.js';
 import { geocodePlace } from '../utils/geocode.js';
 import { ApiError } from '../utils/ApiError.js';
 import { logger } from '../lib/logger.js';
@@ -20,6 +21,13 @@ export async function getNearby(req: Request, res: Response) {
   const { lat, lng, radius } = req.query as unknown as NearbyQuery;
   const result = await getNearbyShops(lat, lng, radius);
   res.json({ data: result });
+}
+
+/** GET /api/shop-products?lat=..&lng=..&radius=.. - registered-merchant products near a point. */
+export async function getShopProducts(req: Request, res: Response) {
+  const { lat, lng, radius } = req.query as unknown as NearbyQuery;
+  const products = await getShopProductsNear(lat, lng, radius);
+  res.json({ data: products });
 }
 
 /** GET /api/nearby-place?q=..&radius=.. - geocode a kecamatan/place then find shops around it. */

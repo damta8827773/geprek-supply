@@ -2,7 +2,7 @@ import { Router } from 'express';
 import regionRoutes from './region.routes.js';
 import supplierRoutes from './supplier.routes.js';
 import merchantRoutes from './merchant.routes.js';
-import { getNearby, getNearbyByPlace } from '../controllers/supplier.controller.js';
+import { getNearby, getNearbyByPlace, getShopProducts } from '../controllers/supplier.controller.js';
 import { validate } from '../middleware/validate.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { nearbyPlaceQuerySchema, nearbyQuerySchema } from '../schemas/supplier.schema.js';
@@ -15,6 +15,7 @@ router.get('/health', (_req, res) => {
 
 router.get('/nearby', validate(nearbyQuerySchema, 'query'), asyncHandler(getNearby));
 router.get('/nearby-place', validate(nearbyPlaceQuerySchema, 'query'), asyncHandler(getNearbyByPlace));
+router.get('/shop-products', validate(nearbyQuerySchema, 'query'), asyncHandler(getShopProducts));
 router.use('/regions', regionRoutes);
 router.use('/suppliers', supplierRoutes);
 router.use('/merchants', merchantRoutes);
