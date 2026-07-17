@@ -1,6 +1,6 @@
 import { type ReactNode } from 'react';
 import { Link, NavLink } from 'react-router-dom';
-import { Globe, Languages, LogIn, LogOut, Map, Moon, Store, Sun } from 'lucide-react';
+import { Globe, Languages, LogIn, LogOut, Map, Moon, ShieldCheck, Store, Sun } from 'lucide-react';
 import { useUiStore } from '@/store/uiStore';
 import { useMerchantStore } from '@/store/merchantStore';
 import Logo from '@/components/Logo';
@@ -44,6 +44,9 @@ export default function Navbar({ right }: NavbarProps) {
             </NavLink>
             <NavLink to="/daftar" className={linkCls}>
               <Store size={13} /> Daftarkan Toko
+            </NavLink>
+            <NavLink to="/privasi" className={linkCls}>
+              <ShieldCheck size={13} /> Privasi
             </NavLink>
           </div>
         )}

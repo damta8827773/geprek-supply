@@ -107,6 +107,12 @@ export default function NearbyPage() {
     );
   };
 
+  // Try GPS automatically on first open so nearby shops appear without an extra click.
+  useEffect(() => {
+    locate();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const onDistrict = (districtId: string) => {
     const d = districts.find((x) => x.id === districtId);
     const r = regencies.find((x) => x.id === regencyId);

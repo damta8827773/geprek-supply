@@ -1,7 +1,8 @@
 import { type FormEvent, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { LogIn, MessageCircle } from 'lucide-react';
+import { LogIn } from 'lucide-react';
 import Navbar from '@/components/Navbar';
+import WhatsAppIcon from '@/components/WhatsAppIcon';
 import { api } from '@/lib/api';
 import { useMerchantStore } from '@/store/merchantStore';
 import { waConfigured, waReportUrl } from '@/lib/wa';
@@ -107,9 +108,9 @@ export default function LoginPage() {
                   href={forgotUrl}
                   target="_blank"
                   rel="noreferrer"
-                  className="press flex w-full items-center justify-center gap-1.5 rounded-lg bg-emerald-500 py-2 text-sm font-bold text-white hover:bg-emerald-600"
+                  className="press flex w-full items-center justify-center gap-1.5 rounded-lg bg-[#25D366] py-2 text-sm font-bold text-white hover:brightness-95"
                 >
-                  <MessageCircle size={15} /> Lapor via WhatsApp
+                  <WhatsAppIcon size={16} /> Lapor via WhatsApp
                 </a>
               ) : (
                 <p className="rounded bg-amber-50 px-2 py-1 text-[10px] text-amber-700 dark:bg-amber-900/30 dark:text-amber-400">
