@@ -98,6 +98,45 @@ export interface RegisterPayload {
   landmark?: string;
 }
 
+/** A product managed by a registered merchant from their dashboard. */
+export interface Product {
+  id: number;
+  name: string;
+  price: number;
+  unit: string;
+  stock: number;
+  inStock: boolean;
+  imageUrl: string | null;
+  merchantId: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ProductInput {
+  name: string;
+  price: number;
+  unit: string;
+  stock: number;
+  inStock: boolean;
+  imageUrl?: string;
+}
+
+/** Merchant summary shown in the admin dashboard. */
+export interface MerchantSummary {
+  id: number;
+  ownerName: string;
+  shopName: string;
+  email: string;
+  kecamatan: string;
+  kota: string | null;
+  kabupaten: string | null;
+  kodePos: string | null;
+  phone: string | null;
+  landmark: string | null;
+  productCount: number;
+  createdAt: string;
+}
+
 export interface AdminSupplier {
   id: number;
   name: string;

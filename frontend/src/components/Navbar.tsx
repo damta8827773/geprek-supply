@@ -56,9 +56,12 @@ export default function Navbar({ right }: NavbarProps) {
         {!ADMIN_MODE &&
           (merchant ? (
             <div className="flex items-center gap-1">
-              <span className="hidden max-w-[120px] truncate rounded bg-slate-100 px-2 py-1.5 text-[11px] font-bold dark:bg-slate-700 sm:block">
-                {merchant.shopName}
-              </span>
+              <Link
+                to="/toko"
+                className="press flex max-w-[150px] items-center gap-1 truncate rounded bg-orange-100 px-2 py-1.5 text-[11px] font-bold text-brand hover:bg-orange-200 dark:bg-orange-900/30"
+              >
+                <Store size={13} /> {merchant.shopName}
+              </Link>
               <button
                 onClick={logout}
                 className="press flex items-center gap-1 rounded bg-red-100 px-2 py-1.5 text-[11px] font-bold text-red-600 hover:bg-red-200 dark:bg-red-900/30 dark:text-red-400"

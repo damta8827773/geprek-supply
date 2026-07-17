@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
-import { Check, Clock, LocateFixed, LogOut, MapPin, Search, ShieldCheck, X } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { Check, Clock, LocateFixed, LogOut, MapPin, Search, ShieldCheck, Store, X } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import { AuroraBackground } from '@/components/ui/aurora-background';
+import { api } from '@/lib/api';
 import { useAllSuppliers, useSetStock } from '@/hooks/useSuppliers';
 import { useAdminStore } from '@/store/adminStore';
 import { useDictionary } from '@/store/uiStore';
@@ -60,7 +62,15 @@ function Dashboard() {
   const setStock = useSetStock();
   const [q, setQ] = useState('');
   const [region, setRegion] = useState('');
+  const [showMerchants, setShowMerchants] = useState(false);
   const needle = q.trim().toLowerCase();
+
+  // Registered self-service shops (kept in sync with the merchant sign-up flow).
+  const { data: merchants = [] } = useQuery({
+    queryKey: ['admin-merchants', email],
+    queryFn: () => api.listMerchants(email),
+    enabled: !!email,
+  });
 
   // Default to the first kecamatan (never show all at once by default).
   useEffect(() => {
@@ -154,6 +164,46 @@ function Dashboard() {
         >
           <LocateFixed size={15} /> Kecamatan Saya
         </button>
+      </div>
+
+      {/* Registered self-service shops */}
+      <div className="mb-3 rounded-xl border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800">
+        <button
+          onClick={() => setShowMerchants((v) => !v)}
+          className="flex w-full items-center justify-between px-4 py-2.5 text-sm font-bold"
+        >
+          <span className="flex items-center gap-2">
+            <Store size={15} className="text-brand" /> Toko Terdaftar ({merchants.length})
+          </span>
+          <span className="text-xs text-slate-400">{showMerchants ? 'Sembunyikan' : 'Lihat'}</span>
+        </button>
+        {showMerchants && (
+          <div className="max-h-60 overflow-y-auto border-t border-slate-100 p-2 custom-scrollbar dark:border-slate-700">
+            {merchants.length === 0 ? (
+              <p className="p-3 text-center text-xs text-slate-400">Belum ada toko yang mendaftar.</p>
+            ) : (
+              <div className="space-y-1.5">
+                {merchants.map((m) => (
+                  <div
+                    key={m.id}
+                    className="rounded-lg border border-slate-100 p-2 text-xs dark:border-slate-700"
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="font-bold">{m.shopName}</span>
+                      <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400">
+                        {m.productCount} produk
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                      {m.ownerName} · {m.kecamatan}
+                      {m.kota ? `, ${m.kota}` : ''} · {m.phone || 'tanpa nomor'}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       <div className="flex-1 overflow-y-auto rounded-2xl border border-slate-200 bg-white p-3 custom-scrollbar dark:border-slate-700 dark:bg-slate-800">

@@ -1,7 +1,10 @@
 import type {
   AdminRegionGroup,
   Merchant,
+  MerchantSummary,
   NearbyResult,
+  Product,
+  ProductInput,
   Region,
   RegionSuppliersResponse,
   RegisterPayload,
@@ -67,6 +70,33 @@ export const api = {
       method: 'POST',
       body: JSON.stringify({ email, password }),
     }),
+
+  // --- Merchant product management (identified by the merchant's email) ---
+  getMyProducts: (email: string) =>
+    request<Product[]>('/merchants/me/products', { headers: { 'x-merchant-email': email } }),
+
+  createProduct: (email: string, payload: ProductInput) =>
+    request<Product>('/merchants/me/products', {
+      method: 'POST',
+      headers: { 'x-merchant-email': email },
+      body: JSON.stringify(payload),
+    }),
+
+  updateProduct: (email: string, id: number, payload: Partial<ProductInput>) =>
+    request<Product>(`/merchants/me/products/${id}`, {
+      method: 'PATCH',
+      headers: { 'x-merchant-email': email },
+      body: JSON.stringify(payload),
+    }),
+
+  deleteProduct: (email: string, id: number) =>
+    request<{ id: number }>(`/merchants/me/products/${id}`, {
+      method: 'DELETE',
+      headers: { 'x-merchant-email': email },
+    }),
+
+  listMerchants: (adminEmail: string) =>
+    request<MerchantSummary[]>('/merchants', { headers: { 'x-admin-email': adminEmail } }),
 
   setSupplierStock: (id: number, inStock: boolean, adminEmail: string) =>
     request<{ id: number; name: string; inStock: boolean }>(`/suppliers/${id}`, {

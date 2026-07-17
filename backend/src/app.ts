@@ -17,10 +17,11 @@ export function createApp() {
     cors({
       origin: env.corsOrigins,
       methods: ['GET', 'POST', 'PATCH', 'DELETE'],
-      allowedHeaders: ['Content-Type', 'x-admin-email', 'x-admin-token'],
+      allowedHeaders: ['Content-Type', 'x-admin-email', 'x-admin-token', 'x-merchant-email'],
     }),
   );
-  app.use(express.json({ limit: '100kb' }));
+  // 1mb allows a small resized product photo (data URL) through; other bodies stay tiny.
+  app.use(express.json({ limit: '1mb' }));
   app.use(pinoHttp({ logger }));
 
   app.use(

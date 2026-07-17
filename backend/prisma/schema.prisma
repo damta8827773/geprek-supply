@@ -61,6 +61,24 @@ model Merchant {
   kodePos   String?
   phone     String?
   landmark  String? // "patokan" / nearest landmark
+  products  Product[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+/// A product a registered merchant sells (managed from their own dashboard).
+model Product {
+  id         Int      @id @default(autoincrement())
+  name       String
+  price      Int      @default(0) // price per unit in IDR
+  unit       String   @default("pcs")
+  stock      Int      @default(0) // quantity on hand
+  inStock    Boolean  @default(true)
+  imageUrl   String? // uploaded product photo (data URL for the localhost prototype)
+  merchant   Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+  merchantId Int
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([merchantId])
 }

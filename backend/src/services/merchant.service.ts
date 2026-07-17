@@ -32,6 +32,28 @@ export async function registerMerchant(input: RegisterInput) {
   return toPublic(merchant);
 }
 
+/** Lists all registered merchants with their product counts (for the admin view). */
+export async function listMerchants() {
+  const merchants = await prisma.merchant.findMany({
+    orderBy: { createdAt: 'desc' },
+    include: { _count: { select: { products: true } } },
+  });
+  return merchants.map((m) => ({
+    id: m.id,
+    ownerName: m.ownerName,
+    shopName: m.shopName,
+    email: m.email,
+    kecamatan: m.kecamatan,
+    kota: m.kota,
+    kabupaten: m.kabupaten,
+    kodePos: m.kodePos,
+    phone: m.phone,
+    landmark: m.landmark,
+    productCount: m._count.products,
+    createdAt: m.createdAt,
+  }));
+}
+
 /** Verifies credentials with a constant-time bcrypt compare. */
 export async function loginMerchant(input: LoginInput) {
   const email = input.email.trim().toLowerCase();

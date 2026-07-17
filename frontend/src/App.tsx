@@ -5,6 +5,7 @@ import MapPage from '@/pages/MapPage';
 import NearbyPage from '@/pages/NearbyPage';
 import RegisterPage from '@/pages/RegisterPage';
 import LoginPage from '@/pages/LoginPage';
+import MerchantDashboard from '@/pages/MerchantDashboard';
 import PrivacyPage from '@/pages/PrivacyPage';
 import AdminPage from '@/pages/AdminPage';
 import NotFoundPage from '@/pages/NotFoundPage';
@@ -37,6 +38,7 @@ export default function App() {
       <Route path="/nearby" element={<NearbyPage />} />
       <Route path="/daftar" element={<RegisterPage />} />
       <Route path="/masuk" element={<LoginPage />} />
+      <Route path="/toko" element={<MerchantDashboard />} />
       <Route path="/privasi" element={<PrivacyPage />} />
       {/* Direct-URL access to the dashboard; intentionally not linked in the public UI. */}
       <Route path="/admin" element={<AdminPage />} />
