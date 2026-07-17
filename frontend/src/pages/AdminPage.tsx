@@ -9,11 +9,10 @@ import { formatRupiah } from '@/lib/format';
 import ProductThumb from '@/components/ProductThumb';
 
 /** Emails allowed into the admin dashboard (comma-separated; matches the server's ADMIN_EMAIL). */
-const ADMIN_EMAILS = ((import.meta.env.VITE_ADMIN_EMAIL as string | undefined) ??
-  'admin@example.com')
+const ADMIN_EMAILS = ((import.meta.env.VITE_ADMIN_EMAIL as string | undefined) ?? 'admin@example.com')
   .split(',')
   .map((e) => e.trim().toLowerCase())
-  .filter(Boolean);
+  .filter(Boolean); 
 
 function LoginCard() {
   const t = useDictionary();

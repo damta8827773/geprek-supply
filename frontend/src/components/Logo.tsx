@@ -24,7 +24,7 @@ export default function Logo({ size = 32, className = '' }: LogoProps) {
         width={size}
         height={size}
         role="img"
-        aria-label="Geprek-Supply logo"
+        aria-label="Pasar Supply logo"
         className="relative drop-shadow-md transition-transform duration-300 ease-out group-hover:-translate-y-0.5 group-hover:rotate-[6deg] group-hover:scale-110"
       >
         <defs>

@@ -4,8 +4,16 @@ import {
   listAllSuppliersByRegion,
   setSupplierStock,
 } from '../services/supplier.service.js';
+import { getNearbyShops } from '../services/nearby.service.js';
 import { logger } from '../lib/logger.js';
-import type { RadiusQuery, UpdateStockInput } from '../schemas/supplier.schema.js';
+import type { NearbyQuery, RadiusQuery, UpdateStockInput } from '../schemas/supplier.schema.js';
+
+/** GET /api/nearby?lat=..&lng=..&radius=.. - real shops near a point (nationwide, live OSM). */
+export async function getNearby(req: Request, res: Response) {
+  const { lat, lng, radius } = req.query as unknown as NearbyQuery;
+  const result = await getNearbyShops(lat, lng, radius);
+  res.json({ data: result });
+}
 
 /** GET /api/regions/:key/suppliers?radius=15 */
 export async function getRegionSuppliers(req: Request, res: Response) {

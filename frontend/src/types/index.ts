@@ -49,6 +49,26 @@ export interface RegionSuppliersResponse {
   suppliers: Supplier[];
 }
 
+/** A real shop/market near a point, from the live OpenStreetMap lookup. */
+export interface NearbyShop {
+  id: number;
+  name: string;
+  category: string;
+  lat: number;
+  lng: number;
+  distanceKm: number;
+  deliveryCost: number;
+  deliveryTier: DeliveryTier;
+  etaMinutes: number;
+}
+
+export interface NearbyResult {
+  origin: LatLng;
+  radiusKm: number;
+  count: number;
+  shops: NearbyShop[];
+}
+
 export interface AdminSupplier {
   id: number;
   name: string;

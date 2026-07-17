@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
-import { LocateFixed, Search } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Globe, LocateFixed, Search } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import RegionTabs from '@/components/RegionTabs';
 import RadiusControl from '@/components/RadiusControl';
@@ -124,6 +125,12 @@ export default function MapPage() {
             >
               <LocateFixed size={14} /> Gunakan Lokasi Saya
             </button>
+            <Link
+              to="/nearby"
+              className="press mt-2 flex w-full items-center justify-center gap-1.5 rounded-lg bg-brand py-2 text-xs font-bold text-white hover:bg-orange-600"
+            >
+              <Globe size={14} /> Cari Toko di Sekitar Saya (Nasional)
+            </Link>
           </div>
 
           <div className="min-h-0 flex-1 overflow-y-auto bg-slate-50 custom-scrollbar dark:bg-slate-900">

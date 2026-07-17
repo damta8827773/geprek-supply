@@ -20,5 +20,13 @@ export const updateStockSchema = z.object({
   inStock: z.boolean(),
 });
 
+/** `GET /api/nearby?lat=..&lng=..&radius=..` - live shop lookup around a point. */
+export const nearbyQuerySchema = z.object({
+  lat: z.coerce.number().min(-90).max(90),
+  lng: z.coerce.number().min(-180).max(180),
+  radius: z.coerce.number().min(0.2).max(10).default(3),
+});
+
 export type RadiusQuery = z.infer<typeof radiusQuerySchema>;
+export type NearbyQuery = z.infer<typeof nearbyQuerySchema>;
 export type UpdateStockInput = z.infer<typeof updateStockSchema>;

@@ -1,5 +1,6 @@
 import type {
   AdminRegionGroup,
+  NearbyResult,
   Region,
   RegionSuppliersResponse,
 } from '@/types';
@@ -49,6 +50,9 @@ export const api = {
   },
 
   getAllSuppliers: () => request<AdminRegionGroup[]>('/suppliers'),
+
+  getNearby: (lat: number, lng: number, radiusKm: number) =>
+    request<NearbyResult>(`/nearby?lat=${lat}&lng=${lng}&radius=${radiusKm}`),
 
   setSupplierStock: (id: number, inStock: boolean, adminEmail: string) =>
     request<{ id: number; name: string; inStock: boolean }>(`/suppliers/${id}`, {
