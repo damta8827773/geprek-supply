@@ -6,6 +6,7 @@ import WhatsAppIcon from '@/components/WhatsAppIcon';
 import { api } from '@/lib/api';
 import { useMerchantStore } from '@/store/merchantStore';
 import { waConfigured, waReportUrl } from '@/lib/wa';
+import { firebaseEnabled, signInWithGoogle } from '@/lib/firebase';
 
 const inputCls =
   'w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-orange-200 dark:border-slate-600 dark:bg-slate-700/60';
@@ -42,6 +43,8 @@ export default function LoginPage() {
     }
   };
 
+  const [gBusy, setGBusy] = useState(false);
+
   const submit = async (e: FormEvent) => {
     e.preventDefault();
     setErr(null);
@@ -54,6 +57,22 @@ export default function LoginPage() {
       setErr(e2 instanceof Error ? e2.message : 'Gagal masuk.');
     } finally {
       setBusy(false);
+    }
+  };
+
+  const google = async () => {
+    setErr(null);
+    setGBusy(true);
+    try {
+      const acc = await signInWithGoogle();
+      if (!acc?.email) throw new Error('Gagal mengambil akun Google.');
+      const merchant = await api.googleLogin(acc.email);
+      setMerchant(merchant);
+      navigate('/');
+    } catch (e2) {
+      setErr(e2 instanceof Error ? e2.message : 'Gagal masuk dengan Google.');
+    } finally {
+      setGBusy(false);
     }
   };
 
@@ -105,6 +124,30 @@ export default function LoginPage() {
               {busy ? 'Masuk...' : 'Masuk'}
             </button>
           </form>
+
+          {firebaseEnabled && (
+            <>
+              <div className="my-3 flex items-center gap-2 text-[10px] font-semibold text-slate-400">
+                <span className="h-px flex-1 bg-slate-200 dark:bg-slate-700" />
+                atau
+                <span className="h-px flex-1 bg-slate-200 dark:bg-slate-700" />
+              </div>
+              <button
+                type="button"
+                onClick={google}
+                disabled={gBusy}
+                className="press flex w-full items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white py-2.5 text-sm font-bold text-slate-700 hover:bg-slate-50 disabled:opacity-50 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100"
+              >
+                <svg width="16" height="16" viewBox="0 0 48 48" aria-hidden>
+                  <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3c-1.6 4.7-6.1 8-11.3 8-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.6 4.1 29.6 2 24 2 11.8 2 2 11.8 2 24s9.8 22 22 22 22-9.8 22-22c0-1.3-.1-2.3-.4-3.5z" />
+                  <path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.6 4.1 29.6 2 24 2 15.5 2 8.1 6.9 6.3 14.7z" />
+                  <path fill="#4CAF50" d="M24 46c5.5 0 10.4-2.1 14.1-5.5l-6.5-5.5C29.6 36.7 26.9 38 24 38c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C8 41 15.4 46 24 46z" />
+                  <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.1-4.1 5.5l6.5 5.5C41.4 36 44 30.5 44 24c0-1.3-.1-2.3-.4-3.5z" />
+                </svg>
+                {gBusy ? 'Memproses...' : 'Masuk dengan Google'}
+              </button>
+            </>
+          )}
 
           <button
             onClick={() => setShowForgot((v) => !v)}

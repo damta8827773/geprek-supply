@@ -20,6 +20,11 @@ export const loginSchema = z.object({
   password: z.string().min(1),
 });
 
+/** `POST /api/merchants/google` - sign in with a Google email. */
+export const googleSchema = z.object({
+  email: z.string().email(),
+});
+
 /** `POST /api/merchants/forgot-password`. */
 export const forgotSchema = z.object({
   email: z.string().email(),
@@ -36,3 +41,4 @@ export type RegisterInput = z.infer<typeof registerSchema>;
 export type LoginInput = z.infer<typeof loginSchema>;
 export type ForgotInput = z.infer<typeof forgotSchema>;
 export type ResetInput = z.infer<typeof resetSchema>;
+export type GoogleInput = z.infer<typeof googleSchema>;

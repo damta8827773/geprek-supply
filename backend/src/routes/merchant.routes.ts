@@ -6,6 +6,7 @@ import {
   getMyProducts,
   patchMyProduct,
   postForgot,
+  postGoogle,
   postLogin,
   postMyProduct,
   postRegister,
@@ -17,6 +18,7 @@ import { validate } from '../middleware/validate.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import {
   forgotSchema,
+  googleSchema,
   loginSchema,
   registerSchema,
   resetSchema,
@@ -39,6 +41,7 @@ const authLimiter = rateLimit({
 
 router.post('/register', authLimiter, validate(registerSchema), asyncHandler(postRegister));
 router.post('/login', authLimiter, validate(loginSchema), asyncHandler(postLogin));
+router.post('/google', authLimiter, validate(googleSchema), asyncHandler(postGoogle));
 router.post('/forgot-password', authLimiter, validate(forgotSchema), asyncHandler(postForgot));
 router.post('/reset-password', authLimiter, validate(resetSchema), asyncHandler(postReset));
 

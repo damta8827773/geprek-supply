@@ -76,6 +76,19 @@ export async function loginMerchant(input: LoginInput) {
 }
 
 /**
+ * Logs in a merchant by their Google email (prototype-level trust of the email
+ * verified client-side by Firebase). New emails must register first.
+ */
+export async function googleLoginMerchant(email: string) {
+  const normalized = email.trim().toLowerCase();
+  const merchant = await prisma.merchant.findUnique({ where: { email: normalized } });
+  if (!merchant) {
+    throw ApiError.notFound('Email ini belum terdaftar sebagai toko. Silakan daftar dulu.');
+  }
+  return toPublic(merchant);
+}
+
+/**
  * Starts a password reset: stores a hashed one-hour token and emails a link.
  * Always returns the same shape so it does not reveal which emails exist. When
  * SMTP is unconfigured (dev), returns the link so it stays testable.

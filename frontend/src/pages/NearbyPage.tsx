@@ -45,6 +45,7 @@ export default function NearbyPage() {
   const [source, setSource] = useState<Source | null>(null);
   const [origin, setOrigin] = useState<LatLng | null>(null);
   const [shops, setShops] = useState<NearbyShop[]>([]);
+  const [shopProducts, setShopProducts] = useState<Supplier[]>([]);
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const [focus, setFocus] = useState<LatLng | null>(null);
@@ -78,6 +79,15 @@ export default function NearbyPage() {
       if (cancelled) return;
       setShops(res.shops);
       setOrigin(res.origin);
+      // Registered shops' products near the same point (these have real prices).
+      api
+        .getShopProductsNear(res.origin.lat, res.origin.lng, radius)
+        .then((sp) => {
+          if (!cancelled) setShopProducts(sp);
+        })
+        .catch(() => {
+          if (!cancelled) setShopProducts([]);
+        });
     })
       .catch((e) => {
         if (!cancelled) setErr(e instanceof Error ? e.message : 'Gagal memuat data.');
@@ -120,7 +130,10 @@ export default function NearbyPage() {
     if (d && r && pv) setSource({ type: 'place', q: `${d.name}, ${r.name}, ${pv.name}, Indonesia` });
   };
 
-  const suppliers = useMemo(() => shops.map(shopToSupplier), [shops]);
+  const suppliers = useMemo(
+    () => [...shopProducts, ...shops.map(shopToSupplier)],
+    [shops, shopProducts],
+  );
   const center = origin ?? JAKARTA;
 
   return (
@@ -235,15 +248,46 @@ export default function NearbyPage() {
               </p>
             ) : loading ? (
               <p className="p-4 text-center text-xs text-slate-400">Mencari toko nyata...</p>
-            ) : shops.length === 0 ? (
-              <p className="p-4 text-center text-xs text-slate-400">
-                Belum ada toko/pasar terdata di OpenStreetMap dalam radius ini. Coba perbesar radius.
-              </p>
             ) : (
               <div className="space-y-2">
-                <p className="px-1 text-[11px] font-bold text-slate-500">
-                  {shops.length} toko/pasar ditemukan
-                </p>
+                {shopProducts.length > 0 && (
+                  <div className="mb-2 space-y-1.5">
+                    <p className="px-1 text-[11px] font-bold text-sky-600">
+                      Produk Toko Terdaftar ({shopProducts.length})
+                    </p>
+                    {shopProducts.map((p) => (
+                      <div
+                        key={p.id}
+                        className="rounded-xl border border-sky-200 bg-sky-50/50 p-2.5 dark:border-sky-900 dark:bg-sky-900/10"
+                      >
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="min-w-0">
+                            <p className="truncate text-sm font-bold">{p.name}</p>
+                            <p className="truncate text-[11px] text-slate-500 dark:text-slate-400">
+                              {p.material} ·{' '}
+                              <span className="font-bold text-emerald-600 dark:text-emerald-400">
+                                {formatRupiah(p.price)}
+                              </span>{' '}
+                              / {p.unit}
+                            </p>
+                          </div>
+                          <span className="shrink-0 rounded bg-slate-100 px-1.5 py-0.5 text-[10px] font-bold dark:bg-slate-700">
+                            {formatKm(p.distanceKm)}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {shops.length === 0 ? (
+                  <p className="p-3 text-center text-xs text-slate-400">
+                    Belum ada toko/pasar OpenStreetMap dalam radius ini. Coba perbesar radius.
+                  </p>
+                ) : (
+                  <p className="px-1 text-[11px] font-bold text-slate-500">
+                    {shops.length} toko/pasar (OpenStreetMap)
+                  </p>
+                )}
                 {shops.map((s) => (
                   <div
                     key={s.id}

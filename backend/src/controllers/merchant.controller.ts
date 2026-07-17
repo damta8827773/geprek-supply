@@ -1,6 +1,7 @@
 import type { Merchant } from '@prisma/client';
 import type { Request, Response } from 'express';
 import {
+  googleLoginMerchant,
   listMerchants,
   loginMerchant,
   registerMerchant,
@@ -16,6 +17,7 @@ import {
 import { logger } from '../lib/logger.js';
 import type {
   ForgotInput,
+  GoogleInput,
   LoginInput,
   RegisterInput,
   ResetInput,
@@ -32,6 +34,13 @@ export async function postRegister(req: Request, res: Response) {
 /** POST /api/merchants/login */
 export async function postLogin(req: Request, res: Response) {
   const merchant = await loginMerchant(req.body as LoginInput);
+  res.json({ data: merchant });
+}
+
+/** POST /api/merchants/google - sign in with a Google email. */
+export async function postGoogle(req: Request, res: Response) {
+  const { email } = req.body as GoogleInput;
+  const merchant = await googleLoginMerchant(email);
   res.json({ data: merchant });
 }
 

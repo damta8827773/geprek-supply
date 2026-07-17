@@ -75,6 +75,9 @@ export const api = {
       body: JSON.stringify({ email, password }),
     }),
 
+  googleLogin: (email: string) =>
+    request<Merchant>('/merchants/google', { method: 'POST', body: JSON.stringify({ email }) }),
+
   forgotPassword: (email: string) =>
     request<{ message: string; sent: boolean; devResetUrl?: string }>(
       '/merchants/forgot-password',
