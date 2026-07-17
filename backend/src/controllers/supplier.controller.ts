@@ -5,14 +5,32 @@ import {
   setSupplierStock,
 } from '../services/supplier.service.js';
 import { getNearbyShops } from '../services/nearby.service.js';
+import { geocodePlace } from '../utils/geocode.js';
+import { ApiError } from '../utils/ApiError.js';
 import { logger } from '../lib/logger.js';
-import type { NearbyQuery, RadiusQuery, UpdateStockInput } from '../schemas/supplier.schema.js';
+import type {
+  NearbyPlaceQuery,
+  NearbyQuery,
+  RadiusQuery,
+  UpdateStockInput,
+} from '../schemas/supplier.schema.js';
 
 /** GET /api/nearby?lat=..&lng=..&radius=.. - real shops near a point (nationwide, live OSM). */
 export async function getNearby(req: Request, res: Response) {
   const { lat, lng, radius } = req.query as unknown as NearbyQuery;
   const result = await getNearbyShops(lat, lng, radius);
   res.json({ data: result });
+}
+
+/** GET /api/nearby-place?q=..&radius=.. - geocode a kecamatan/place then find shops around it. */
+export async function getNearbyByPlace(req: Request, res: Response) {
+  const { q, radius } = req.query as unknown as NearbyPlaceQuery;
+  const geo = await geocodePlace(q);
+  if (!geo) {
+    throw ApiError.notFound(`Lokasi "${q}" tidak ditemukan`);
+  }
+  const result = await getNearbyShops(geo.lat, geo.lng, radius);
+  res.json({ data: { ...result, place: q } });
 }
 
 /** GET /api/regions/:key/suppliers?radius=15 */

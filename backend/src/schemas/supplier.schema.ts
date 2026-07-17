@@ -27,6 +27,13 @@ export const nearbyQuerySchema = z.object({
   radius: z.coerce.number().min(0.2).max(10).default(3),
 });
 
+/** `GET /api/nearby-place?q=..&radius=..` - geocode a place then find shops around it. */
+export const nearbyPlaceQuerySchema = z.object({
+  q: z.string().min(2).max(200),
+  radius: z.coerce.number().min(0.2).max(10).default(3),
+});
+
 export type RadiusQuery = z.infer<typeof radiusQuerySchema>;
 export type NearbyQuery = z.infer<typeof nearbyQuerySchema>;
+export type NearbyPlaceQuery = z.infer<typeof nearbyPlaceQuerySchema>;
 export type UpdateStockInput = z.infer<typeof updateStockSchema>;

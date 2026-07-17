@@ -54,6 +54,9 @@ export const api = {
   getNearby: (lat: number, lng: number, radiusKm: number) =>
     request<NearbyResult>(`/nearby?lat=${lat}&lng=${lng}&radius=${radiusKm}`),
 
+  getNearbyByPlace: (q: string, radiusKm: number) =>
+    request<NearbyResult>(`/nearby-place?q=${encodeURIComponent(q)}&radius=${radiusKm}`),
+
   setSupplierStock: (id: number, inStock: boolean, adminEmail: string) =>
     request<{ id: number; name: string; inStock: boolean }>(`/suppliers/${id}`, {
       method: 'PATCH',
