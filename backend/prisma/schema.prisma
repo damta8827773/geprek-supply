@@ -61,11 +61,13 @@ model Merchant {
   kodePos   String?
   phone     String?
   landmark  String? // "patokan" / nearest landmark
-  lat       Float? // geocoded from the address (for placing products on the map)
-  lng       Float?
-  products  Product[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  lat          Float? // geocoded from the address (for placing products on the map)
+  lng          Float?
+  resetToken   String? // sha256 of the password-reset token
+  resetExpires DateTime?
+  products     Product[]
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 }
 
 /// A product a registered merchant sells (managed from their own dashboard).

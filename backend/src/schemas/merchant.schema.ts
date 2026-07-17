@@ -20,5 +20,19 @@ export const loginSchema = z.object({
   password: z.string().min(1),
 });
 
+/** `POST /api/merchants/forgot-password`. */
+export const forgotSchema = z.object({
+  email: z.string().email(),
+});
+
+/** `POST /api/merchants/reset-password`. */
+export const resetSchema = z.object({
+  email: z.string().email(),
+  token: z.string().min(10),
+  password: z.string().min(6).max(100),
+});
+
 export type RegisterInput = z.infer<typeof registerSchema>;
 export type LoginInput = z.infer<typeof loginSchema>;
+export type ForgotInput = z.infer<typeof forgotSchema>;
+export type ResetInput = z.infer<typeof resetSchema>;

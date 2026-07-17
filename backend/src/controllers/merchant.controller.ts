@@ -1,6 +1,12 @@
 import type { Merchant } from '@prisma/client';
 import type { Request, Response } from 'express';
-import { listMerchants, loginMerchant, registerMerchant } from '../services/merchant.service.js';
+import {
+  listMerchants,
+  loginMerchant,
+  registerMerchant,
+  requestPasswordReset,
+  resetPassword,
+} from '../services/merchant.service.js';
 import {
   createProduct,
   deleteProduct,
@@ -8,7 +14,12 @@ import {
   updateProduct,
 } from '../services/product.service.js';
 import { logger } from '../lib/logger.js';
-import type { LoginInput, RegisterInput } from '../schemas/merchant.schema.js';
+import type {
+  ForgotInput,
+  LoginInput,
+  RegisterInput,
+  ResetInput,
+} from '../schemas/merchant.schema.js';
 import type { CreateProductInput, UpdateProductInput } from '../schemas/product.schema.js';
 
 /** POST /api/merchants/register */
@@ -22,6 +33,20 @@ export async function postRegister(req: Request, res: Response) {
 export async function postLogin(req: Request, res: Response) {
   const merchant = await loginMerchant(req.body as LoginInput);
   res.json({ data: merchant });
+}
+
+/** POST /api/merchants/forgot-password - emails a reset link. */
+export async function postForgot(req: Request, res: Response) {
+  const { email } = req.body as ForgotInput;
+  const result = await requestPasswordReset(email);
+  res.json({ data: { message: 'Jika email terdaftar, link reset telah dikirim.', ...result } });
+}
+
+/** POST /api/merchants/reset-password - sets a new password with a valid token. */
+export async function postReset(req: Request, res: Response) {
+  const { email, token, password } = req.body as ResetInput;
+  await resetPassword(email, token, password);
+  res.json({ data: { ok: true } });
 }
 
 /** GET /api/merchants - all registered merchants (admin view). */

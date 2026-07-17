@@ -1,9 +1,14 @@
+import crypto from 'node:crypto';
 import bcrypt from 'bcryptjs';
 import type { Merchant } from '@prisma/client';
 import { prisma } from '../lib/prisma.js';
+import { env } from '../env.js';
 import { ApiError } from '../utils/ApiError.js';
 import { geocodePlace } from '../utils/geocode.js';
+import { sendResetEmail } from '../lib/mailer.js';
 import type { LoginInput, RegisterInput } from '../schemas/merchant.schema.js';
+
+const sha256 = (s: string) => crypto.createHash('sha256').update(s).digest('hex');
 
 /** Strips the password hash before returning a merchant to the client. */
 function toPublic(m: Merchant) {
@@ -68,4 +73,45 @@ export async function loginMerchant(input: LoginInput) {
     throw ApiError.unauthorized('Email atau kata sandi salah.');
   }
   return toPublic(merchant);
+}
+
+/**
+ * Starts a password reset: stores a hashed one-hour token and emails a link.
+ * Always returns the same shape so it does not reveal which emails exist. When
+ * SMTP is unconfigured (dev), returns the link so it stays testable.
+ */
+export async function requestPasswordReset(email: string) {
+  const normalized = email.trim().toLowerCase();
+  const merchant = await prisma.merchant.findUnique({ where: { email: normalized } });
+  if (!merchant) return { sent: false as boolean, devResetUrl: undefined as string | undefined };
+
+  const token = crypto.randomBytes(32).toString('hex');
+  await prisma.merchant.update({
+    where: { id: merchant.id },
+    data: { resetToken: sha256(token), resetExpires: new Date(Date.now() + 60 * 60 * 1000) },
+  });
+  const resetUrl = `${env.APP_URL}/reset?email=${encodeURIComponent(normalized)}&token=${token}`;
+  const sent = await sendResetEmail(normalized, resetUrl);
+  return { sent, devResetUrl: !env.smtpConfigured && !env.isProd ? resetUrl : undefined };
+}
+
+/** Completes a reset: validates the token + expiry, then sets the new password. */
+export async function resetPassword(email: string, token: string, newPassword: string) {
+  const normalized = email.trim().toLowerCase();
+  const merchant = await prisma.merchant.findUnique({ where: { email: normalized } });
+  if (
+    !merchant ||
+    !merchant.resetToken ||
+    !merchant.resetExpires ||
+    merchant.resetExpires < new Date() ||
+    merchant.resetToken !== sha256(token)
+  ) {
+    throw ApiError.badRequest('Token reset tidak valid atau sudah kedaluwarsa.');
+  }
+  const password = await bcrypt.hash(newPassword, 10);
+  await prisma.merchant.update({
+    where: { id: merchant.id },
+    data: { password, resetToken: null, resetExpires: null },
+  });
+  return { ok: true };
 }

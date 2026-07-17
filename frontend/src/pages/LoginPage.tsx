@@ -23,6 +23,24 @@ export default function LoginPage() {
   const [fShop, setFShop] = useState('');
   const [fOwner, setFOwner] = useState('');
   const [fArea, setFArea] = useState('');
+  const [fEmail, setFEmail] = useState('');
+  const [resetMsg, setResetMsg] = useState<string | null>(null);
+  const [resetBusy, setResetBusy] = useState(false);
+
+  const doEmailReset = async () => {
+    setResetMsg(null);
+    setResetBusy(true);
+    try {
+      const r = await api.forgotPassword(fEmail);
+      setResetMsg(
+        r.devResetUrl ? `SMTP belum diset (mode dev). Link reset: ${r.devResetUrl}` : r.message,
+      );
+    } catch (e2) {
+      setResetMsg(e2 instanceof Error ? e2.message : 'Gagal mengirim.');
+    } finally {
+      setResetBusy(false);
+    }
+  };
 
   const submit = async (e: FormEvent) => {
     e.preventDefault();
@@ -97,8 +115,34 @@ export default function LoginPage() {
 
           {showForgot && (
             <div className="mt-2 space-y-2 rounded-lg border border-slate-200 bg-slate-50 p-3 dark:border-slate-700 dark:bg-slate-900/40">
+              <div className="rounded-lg border border-slate-200 bg-white p-2 dark:border-slate-700 dark:bg-slate-800">
+                <p className="mb-1 text-[11px] font-bold">Reset via Email</p>
+                <input
+                  type="email"
+                  placeholder="Email akun"
+                  className={inputCls}
+                  value={fEmail}
+                  onChange={(e) => setFEmail(e.target.value)}
+                />
+                <button
+                  type="button"
+                  onClick={doEmailReset}
+                  disabled={resetBusy}
+                  className="press mt-1.5 w-full rounded-lg bg-brand py-1.5 text-xs font-bold text-white hover:bg-orange-600 disabled:opacity-50"
+                >
+                  {resetBusy ? 'Mengirim...' : 'Kirim link reset ke email'}
+                </button>
+                {resetMsg && (
+                  <p className="mt-1 break-all text-[10px] text-slate-600 dark:text-slate-300">
+                    {resetMsg}
+                  </p>
+                )}
+              </div>
+              <p className="text-center text-[10px] font-semibold text-slate-400">
+                atau lapor ke admin via WhatsApp:
+              </p>
               <p className="text-[11px] text-slate-500 dark:text-slate-400">
-                Kirim laporan ke admin via WhatsApp. Isi data agar 1 tokomu ketemu pasti.
+                Isi data agar 1 tokomu ketemu pasti.
               </p>
               <input placeholder="Nama Toko" className={inputCls} value={fShop} onChange={(e) => setFShop(e.target.value)} />
               <input placeholder="Nama Pemilik" className={inputCls} value={fOwner} onChange={(e) => setFOwner(e.target.value)} />

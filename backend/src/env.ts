@@ -15,6 +15,14 @@ const envSchema = z.object({
   // send a matching `x-admin-token` header (email alone is no longer enough).
   // Leave empty to keep the simple email gate (prototype default).
   ADMIN_TOKEN: z.string().optional(),
+  // SMTP (password-reset emails). All optional; when unset, reset emails are skipped.
+  SMTP_HOST: z.string().optional(),
+  SMTP_PORT: z.coerce.number().int().positive().optional(),
+  SMTP_USER: z.string().optional(),
+  SMTP_PASS: z.string().optional(),
+  SMTP_FROM: z.string().optional(),
+  // Public URL of the web app, used to build the reset link in the email.
+  APP_URL: z.string().default('http://localhost:5173'),
 });
 
 const parsed = envSchema.safeParse(process.env);
@@ -35,4 +43,7 @@ export const env = {
   adminEmails: parsed.data.ADMIN_EMAIL.split(',')
     .map((e) => e.trim().toLowerCase())
     .filter(Boolean),
+  smtpConfigured: Boolean(
+    parsed.data.SMTP_HOST && parsed.data.SMTP_USER && parsed.data.SMTP_PASS,
+  ),
 };

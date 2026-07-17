@@ -75,6 +75,18 @@ export const api = {
       body: JSON.stringify({ email, password }),
     }),
 
+  forgotPassword: (email: string) =>
+    request<{ message: string; sent: boolean; devResetUrl?: string }>(
+      '/merchants/forgot-password',
+      { method: 'POST', body: JSON.stringify({ email }) },
+    ),
+
+  resetPassword: (email: string, token: string, password: string) =>
+    request<{ ok: boolean }>('/merchants/reset-password', {
+      method: 'POST',
+      body: JSON.stringify({ email, token, password }),
+    }),
+
   // --- Merchant product management (identified by the merchant's email) ---
   getMyProducts: (email: string) =>
     request<Product[]>('/merchants/me/products', { headers: { 'x-merchant-email': email } }),

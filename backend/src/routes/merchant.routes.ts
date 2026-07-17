@@ -5,15 +5,22 @@ import {
   getMerchants,
   getMyProducts,
   patchMyProduct,
+  postForgot,
   postLogin,
   postMyProduct,
   postRegister,
+  postReset,
 } from '../controllers/merchant.controller.js';
 import { requireAdmin } from '../middleware/auth.js';
 import { requireMerchant } from '../middleware/merchantAuth.js';
 import { validate } from '../middleware/validate.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
-import { loginSchema, registerSchema } from '../schemas/merchant.schema.js';
+import {
+  forgotSchema,
+  loginSchema,
+  registerSchema,
+  resetSchema,
+} from '../schemas/merchant.schema.js';
 import {
   createProductSchema,
   productIdSchema,
@@ -32,6 +39,8 @@ const authLimiter = rateLimit({
 
 router.post('/register', authLimiter, validate(registerSchema), asyncHandler(postRegister));
 router.post('/login', authLimiter, validate(loginSchema), asyncHandler(postLogin));
+router.post('/forgot-password', authLimiter, validate(forgotSchema), asyncHandler(postForgot));
+router.post('/reset-password', authLimiter, validate(resetSchema), asyncHandler(postReset));
 
 // Admin: list every registered merchant.
 router.get('/', requireAdmin, asyncHandler(getMerchants));
