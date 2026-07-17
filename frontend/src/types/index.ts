@@ -85,6 +85,8 @@ export interface Merchant {
   landmark: string | null;
   createdAt: string;
   updatedAt: string;
+  /** Raw session token returned on register/login; sent as x-merchant-token. */
+  token?: string;
 }
 
 export interface RegisterPayload {

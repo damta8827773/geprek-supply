@@ -17,7 +17,7 @@ export function createApp() {
     cors({
       origin: env.corsOrigins,
       methods: ['GET', 'POST', 'PATCH', 'DELETE'],
-      allowedHeaders: ['Content-Type', 'x-admin-email', 'x-admin-token', 'x-merchant-email'],
+      allowedHeaders: ['Content-Type', 'x-admin-email', 'x-admin-token', 'x-merchant-token'],
     }),
   );
   // 1mb allows a small resized product photo (data URL) through; other bodies stay tiny.

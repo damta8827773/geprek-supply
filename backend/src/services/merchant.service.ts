@@ -10,10 +10,24 @@ import type { LoginInput, RegisterInput } from '../schemas/merchant.schema.js';
 
 const sha256 = (s: string) => crypto.createHash('sha256').update(s).digest('hex');
 
-/** Strips the password hash before returning a merchant to the client. */
+/** Strips secrets (password hash, tokens) before returning a merchant to the client. */
 function toPublic(m: Merchant) {
-  const { password: _pw, ...rest } = m;
+  const { password: _pw, resetToken: _rt, sessionToken: _st, ...rest } = m;
   return rest;
+}
+
+/**
+ * Issues a fresh random session token for a merchant. Only the sha256 hash is
+ * stored; the raw token goes to the client and must accompany every
+ * product-mutation request (x-merchant-token).
+ */
+async function issueSession(merchantId: number): Promise<string> {
+  const token = crypto.randomBytes(32).toString('hex');
+  await prisma.merchant.update({
+    where: { id: merchantId },
+    data: { sessionToken: sha256(token) },
+  });
+  return token;
 }
 
 /**
@@ -40,7 +54,8 @@ export async function registerMerchant(input: RegisterInput) {
   const merchant = await prisma.merchant.create({
     data: { ...input, email, shopName, password, lat: geo?.lat ?? null, lng: geo?.lng ?? null },
   });
-  return toPublic(merchant);
+  const token = await issueSession(merchant.id);
+  return { ...toPublic(merchant), token };
 }
 
 /** Lists all registered merchants with their product counts (for the admin view). */
@@ -72,7 +87,8 @@ export async function loginMerchant(input: LoginInput) {
   if (!merchant || !(await bcrypt.compare(input.password, merchant.password))) {
     throw ApiError.unauthorized('Email atau kata sandi salah.');
   }
-  return toPublic(merchant);
+  const token = await issueSession(merchant.id);
+  return { ...toPublic(merchant), token };
 }
 
 /**
@@ -85,7 +101,8 @@ export async function googleLoginMerchant(email: string) {
   if (!merchant) {
     throw ApiError.notFound('Email ini belum terdaftar sebagai toko. Silakan daftar dulu.');
   }
-  return toPublic(merchant);
+  const token = await issueSession(merchant.id);
+  return { ...toPublic(merchant), token };
 }
 
 /**

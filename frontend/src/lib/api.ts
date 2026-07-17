@@ -90,32 +90,37 @@ export const api = {
       body: JSON.stringify({ email, token, password }),
     }),
 
-  // --- Merchant product management (identified by the merchant's email) ---
-  getMyProducts: (email: string) =>
-    request<Product[]>('/merchants/me/products', { headers: { 'x-merchant-email': email } }),
+  // --- Merchant product management (authenticated by the session token) ---
+  getMyProducts: (token: string) =>
+    request<Product[]>('/merchants/me/products', { headers: { 'x-merchant-token': token } }),
 
-  createProduct: (email: string, payload: ProductInput) =>
+  createProduct: (token: string, payload: ProductInput) =>
     request<Product>('/merchants/me/products', {
       method: 'POST',
-      headers: { 'x-merchant-email': email },
+      headers: { 'x-merchant-token': token },
       body: JSON.stringify(payload),
     }),
 
-  updateProduct: (email: string, id: number, payload: Partial<ProductInput>) =>
+  updateProduct: (token: string, id: number, payload: Partial<ProductInput>) =>
     request<Product>(`/merchants/me/products/${id}`, {
       method: 'PATCH',
-      headers: { 'x-merchant-email': email },
+      headers: { 'x-merchant-token': token },
       body: JSON.stringify(payload),
     }),
 
-  deleteProduct: (email: string, id: number) =>
+  deleteProduct: (token: string, id: number) =>
     request<{ id: number }>(`/merchants/me/products/${id}`, {
       method: 'DELETE',
-      headers: { 'x-merchant-email': email },
+      headers: { 'x-merchant-token': token },
     }),
 
   listMerchants: (adminEmail: string) =>
-    request<MerchantSummary[]>('/merchants', { headers: { 'x-admin-email': adminEmail } }),
+    request<MerchantSummary[]>('/merchants', {
+      headers: {
+        'x-admin-email': adminEmail,
+        ...(ADMIN_TOKEN ? { 'x-admin-token': ADMIN_TOKEN } : {}),
+      },
+    }),
 
   setSupplierStock: (id: number, inStock: boolean, adminEmail: string) =>
     request<{ id: number; name: string; inStock: boolean }>(`/suppliers/${id}`, {

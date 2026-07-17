@@ -40,7 +40,7 @@ export default function RegisterPage() {
     try {
       const merchant = await api.registerMerchant(form);
       setMerchant(merchant);
-      navigate('/');
+      navigate('/toko');
     } catch (e2) {
       setErr(e2 instanceof Error ? e2.message : 'Gagal mendaftar.');
     } finally {

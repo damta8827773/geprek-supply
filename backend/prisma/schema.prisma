@@ -65,6 +65,7 @@ model Merchant {
   lng          Float?
   resetToken   String? // sha256 of the password-reset token
   resetExpires DateTime?
+  sessionToken String? // sha256 of the current session token (real auth, not a trusted header)
   products     Product[]
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt

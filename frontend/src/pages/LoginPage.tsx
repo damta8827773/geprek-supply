@@ -52,7 +52,7 @@ export default function LoginPage() {
     try {
       const merchant = await api.loginMerchant(email, password);
       setMerchant(merchant);
-      navigate('/');
+      navigate('/toko');
     } catch (e2) {
       setErr(e2 instanceof Error ? e2.message : 'Gagal masuk.');
     } finally {
@@ -68,7 +68,7 @@ export default function LoginPage() {
       if (!acc?.email) throw new Error('Gagal mengambil akun Google.');
       const merchant = await api.googleLogin(acc.email);
       setMerchant(merchant);
-      navigate('/');
+      navigate('/toko');
     } catch (e2) {
       setErr(e2 instanceof Error ? e2.message : 'Gagal masuk dengan Google.');
     } finally {

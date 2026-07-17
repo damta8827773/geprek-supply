@@ -17,16 +17,16 @@ const inputCls =
 
 export default function MerchantDashboard() {
   const merchant = useMerchantStore((s) => s.merchant);
+  const token = useMerchantStore((s) => s.token) ?? '';
   const [form, setForm] = useState<ProductInput>(EMPTY);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [err, setErr] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
-  const email = merchant?.email ?? '';
   const { data: products = [], refetch } = useQuery({
-    queryKey: ['my-products', email],
-    queryFn: () => api.getMyProducts(email),
-    enabled: !!email,
+    queryKey: ['my-products', token],
+    queryFn: () => api.getMyProducts(token),
+    enabled: !!token,
   });
 
   if (!merchant) {
@@ -66,8 +66,8 @@ export default function MerchantDashboard() {
     setErr(null);
     setBusy(true);
     try {
-      if (editingId) await api.updateProduct(email, editingId, form);
-      else await api.createProduct(email, form);
+      if (editingId) await api.updateProduct(token, editingId, form);
+      else await api.createProduct(token, form);
       reset();
       await refetch();
     } catch (e2) {
@@ -91,13 +91,13 @@ export default function MerchantDashboard() {
   };
 
   const toggleStock = async (p: Product) => {
-    await api.updateProduct(email, p.id, { inStock: !p.inStock });
+    await api.updateProduct(token, p.id, { inStock: !p.inStock });
     refetch();
   };
 
   const remove = async (id: number) => {
     if (!window.confirm('Hapus produk ini?')) return;
-    await api.deleteProduct(email, id);
+    await api.deleteProduct(token, id);
     refetch();
   };
 
