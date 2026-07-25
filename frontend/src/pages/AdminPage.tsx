@@ -134,6 +134,35 @@ function Dashboard() {
         </button>
       </div>
 
+      {/* System stats at a glance */}
+      {(() => {
+        const all = groups.flatMap((g) => g.suppliers);
+        const avail = all.filter((s) => s.inStock).length;
+        const totalProducts = merchants.reduce((a, m) => a + m.productCount, 0);
+        const stats = [
+          { label: 'Total Pemasok', value: all.length, cls: 'text-brand' },
+          { label: 'Tersedia', value: avail, cls: 'text-emerald-600 dark:text-emerald-400' },
+          { label: 'Kosong', value: all.length - avail, cls: 'text-red-600 dark:text-red-400' },
+          { label: 'Toko Terdaftar', value: merchants.length, cls: 'text-sky-600 dark:text-sky-400' },
+          { label: 'Produk Toko', value: totalProducts, cls: 'text-amber-600 dark:text-amber-400' },
+        ];
+        return (
+          <div className="mb-3 grid grid-cols-2 gap-2 sm:grid-cols-5">
+            {stats.map((s) => (
+              <div
+                key={s.label}
+                className="rounded-xl border border-slate-200 bg-white p-2.5 text-center dark:border-slate-700 dark:bg-slate-800"
+              >
+                <p className={`text-xl font-black ${s.cls}`}>{s.value}</p>
+                <p className="text-[10px] font-bold uppercase tracking-wide text-slate-400">
+                  {s.label}
+                </p>
+              </div>
+            ))}
+          </div>
+        );
+      })()}
+
       <div className="mb-3 flex gap-2">
         <div className="relative flex-1">
           <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />

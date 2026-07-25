@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
-import { Navigate, Route, Routes } from 'react-router-dom';
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { useUiStore } from '@/store/uiStore';
+import FloatingWA from '@/components/FloatingWA';
 import MapPage from '@/pages/MapPage';
 import NearbyPage from '@/pages/NearbyPage';
 import RegisterPage from '@/pages/RegisterPage';
@@ -17,6 +18,7 @@ const ADMIN_MODE = import.meta.env.VITE_ADMIN === 'true';
 
 export default function App() {
   const theme = useUiStore((s) => s.theme);
+  const { pathname } = useLocation();
 
   // Keep the <html> class in sync so Tailwind's `dark:` variants apply globally.
   useEffect(() => {
@@ -34,17 +36,21 @@ export default function App() {
   }
 
   return (
-    <Routes>
-      <Route path="/" element={<MapPage />} />
-      <Route path="/nearby" element={<NearbyPage />} />
-      <Route path="/daftar" element={<RegisterPage />} />
-      <Route path="/masuk" element={<LoginPage />} />
-      <Route path="/reset" element={<ResetPage />} />
-      <Route path="/toko" element={<MerchantDashboard />} />
-      <Route path="/privasi" element={<PrivacyPage />} />
-      {/* Direct-URL access to the dashboard; intentionally not linked in the public UI. */}
-      <Route path="/admin" element={<AdminPage />} />
-      <Route path="*" element={<NotFoundPage />} />
-    </Routes>
+    <>
+      <Routes>
+        <Route path="/" element={<MapPage />} />
+        <Route path="/nearby" element={<NearbyPage />} />
+        <Route path="/daftar" element={<RegisterPage />} />
+        <Route path="/masuk" element={<LoginPage />} />
+        <Route path="/reset" element={<ResetPage />} />
+        <Route path="/toko" element={<MerchantDashboard />} />
+        <Route path="/privasi" element={<PrivacyPage />} />
+        {/* Direct-URL access to the dashboard; intentionally not linked in the public UI. */}
+        <Route path="/admin" element={<AdminPage />} />
+        <Route path="*" element={<NotFoundPage />} />
+      </Routes>
+      {/* Floating WhatsApp contact bubble on every public page (hidden on the admin dashboard). */}
+      {!pathname.startsWith('/admin') && <FloatingWA />}
+    </>
   );
 }
