@@ -1,6 +1,20 @@
 import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Check, Clock, LocateFixed, LogOut, MapPin, Search, ShieldCheck, Store, X } from 'lucide-react';
+import {
+  Boxes,
+  Check,
+  CheckCircle2,
+  Clock,
+  LocateFixed,
+  LogOut,
+  MapPin,
+  PackageX,
+  Search,
+  ShieldCheck,
+  ShoppingBag,
+  Store,
+  X,
+} from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import { AuroraBackground } from '@/components/ui/aurora-background';
 import { api } from '@/lib/api';
@@ -123,7 +137,14 @@ function Dashboard() {
     <div className="mx-auto flex h-full w-full max-w-4xl flex-col">
       <div className="mb-4 flex items-end justify-between">
         <div>
-          <h2 className="text-2xl font-bold">{t.stockMgmt}</h2>
+          <div className="flex items-center gap-2">
+            <h2 className="bg-gradient-to-r from-brand to-amber-500 bg-clip-text text-2xl font-black text-transparent">
+              {t.stockMgmt}
+            </h2>
+            <span className="flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400">
+              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" /> LIVE
+            </span>
+          </div>
           <p className="text-sm text-slate-500 dark:text-slate-400">{t.stockMgmtSub}</p>
         </div>
         <button
@@ -139,26 +160,50 @@ function Dashboard() {
         const all = groups.flatMap((g) => g.suppliers);
         const avail = all.filter((s) => s.inStock).length;
         const totalProducts = merchants.reduce((a, m) => a + m.productCount, 0);
+        const pct = all.length ? Math.round((avail / all.length) * 100) : 0;
         const stats = [
-          { label: 'Total Pemasok', value: all.length, cls: 'text-brand' },
-          { label: 'Tersedia', value: avail, cls: 'text-emerald-600 dark:text-emerald-400' },
-          { label: 'Kosong', value: all.length - avail, cls: 'text-red-600 dark:text-red-400' },
-          { label: 'Toko Terdaftar', value: merchants.length, cls: 'text-sky-600 dark:text-sky-400' },
-          { label: 'Produk Toko', value: totalProducts, cls: 'text-amber-600 dark:text-amber-400' },
+          { label: 'Total Pemasok', value: all.length, Icon: Boxes, grad: 'from-orange-500 to-amber-500' },
+          { label: 'Tersedia', value: avail, Icon: CheckCircle2, grad: 'from-emerald-500 to-teal-500' },
+          { label: 'Kosong', value: all.length - avail, Icon: PackageX, grad: 'from-rose-500 to-red-500' },
+          { label: 'Toko Terdaftar', value: merchants.length, Icon: Store, grad: 'from-sky-500 to-blue-500' },
+          { label: 'Produk Toko', value: totalProducts, Icon: ShoppingBag, grad: 'from-violet-500 to-fuchsia-500' },
         ];
         return (
-          <div className="mb-3 grid grid-cols-2 gap-2 sm:grid-cols-5">
-            {stats.map((s) => (
-              <div
-                key={s.label}
-                className="rounded-xl border border-slate-200 bg-white p-2.5 text-center dark:border-slate-700 dark:bg-slate-800"
-              >
-                <p className={`text-xl font-black ${s.cls}`}>{s.value}</p>
-                <p className="text-[10px] font-bold uppercase tracking-wide text-slate-400">
-                  {s.label}
-                </p>
+          <div className="mb-3">
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-5">
+              {stats.map((s, i) => (
+                <div
+                  key={s.label}
+                  style={{ animationDelay: `${i * 60}ms` }}
+                  className="animate-slide-up card-hover overflow-hidden rounded-2xl border border-slate-200 bg-white p-3 shadow-sm dark:border-slate-700 dark:bg-slate-800"
+                >
+                  <div
+                    className={`mb-2 flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br ${s.grad} text-white shadow-md`}
+                  >
+                    <s.Icon size={18} />
+                  </div>
+                  <p className="text-2xl font-black leading-none text-slate-800 dark:text-white">
+                    {s.value}
+                  </p>
+                  <p className="mt-1 text-[10px] font-bold uppercase tracking-wide text-slate-400">
+                    {s.label}
+                  </p>
+                </div>
+              ))}
+            </div>
+            {/* Availability health bar */}
+            <div className="mt-2 flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 dark:border-slate-700 dark:bg-slate-800">
+              <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400">
+                Ketersediaan Stok
+              </span>
+              <div className="h-2 flex-1 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-700">
+                <div
+                  className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 transition-all duration-700"
+                  style={{ width: `${pct}%` }}
+                />
               </div>
-            ))}
+              <span className="text-xs font-black text-emerald-600 dark:text-emerald-400">{pct}%</span>
+            </div>
           </div>
         );
       })()}

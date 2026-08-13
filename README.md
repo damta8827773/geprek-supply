@@ -13,6 +13,24 @@
 
 ---
 
+## 🚀 Executive Highlights
+
+> One screen turns hours of phone calls and market trips into a sub-second decision.
+
+| Kapabilitas | Nilai Bisnis |
+| :-- | :-- |
+| 🎯 **Smart Radius Routing** | Bandingkan puluhan pemasok, urut **termurah + terdekat** dalam hitungan detik. |
+| 🛰️ **Cakupan Nasional** | Cari toko & pasar **nyata** di **7.285 kecamatan** se-Indonesia (data OpenStreetMap live) + deteksi GPS. |
+| 🏪 **Marketplace Pemasok** | Toko (kelontong/warung) **daftar mandiri**, kelola produk, harga, stok, & foto - tampil otomatis di peta. |
+| 💸 **Biaya Terukur** | Estimasi **ongkir GoRide** & **ETA sadar-lalu-lintas** per pemasok. |
+| 🔐 **Keamanan Berlapis** | Session token (SHA-256), bcrypt, faktor-kedua admin, rate-limit, audit log - diverifikasi di server. |
+| 📊 **Dashboard Real-time** | Panel admin dengan metrik langsung: pemasok, ketersediaan, toko terdaftar, produk. |
+| 🔑 **Onboarding Lengkap** | Daftar/masuk, **login Google**, reset kata sandi via email, dukungan WhatsApp 1-klik. |
+
+**Tech**: React 18 · TypeScript · Vite · Tailwind · MapLibre GL · Node.js · Express · Prisma · SQLite.
+
+---
+
 ## 📌 Project Overview
 
 **Geprek-Supply** is a decision-support & mapping system for a fried-chicken
