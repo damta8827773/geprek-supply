@@ -1,12 +1,15 @@
 import type { Merchant } from '@prisma/client';
 import type { Request, Response } from 'express';
 import {
+  changeMerchantPassword,
+  deleteMerchant,
   googleLoginMerchant,
   listMerchants,
   loginMerchant,
   registerMerchant,
   requestPasswordReset,
   resetPassword,
+  updateMerchantProfile,
 } from '../services/merchant.service.js';
 import {
   createProduct,
@@ -16,11 +19,13 @@ import {
 } from '../services/product.service.js';
 import { logger } from '../lib/logger.js';
 import type {
+  ChangePasswordInput,
   ForgotInput,
   GoogleInput,
   LoginInput,
   RegisterInput,
   ResetInput,
+  UpdateProfileInput,
 } from '../schemas/merchant.schema.js';
 import type { CreateProductInput, UpdateProductInput } from '../schemas/product.schema.js';
 
@@ -61,6 +66,25 @@ export async function postReset(req: Request, res: Response) {
 /** GET /api/merchants - all registered merchants (admin view). */
 export async function getMerchants(_req: Request, res: Response) {
   res.json({ data: await listMerchants() });
+}
+
+/** DELETE /api/merchants/:id - admin removes a registered shop and its products. */
+export async function deleteMerchantById(req: Request, res: Response) {
+  const { id } = req.params as unknown as { id: number };
+  res.json({ data: await deleteMerchant(id) });
+}
+
+/** PATCH /api/merchants/me - the signed-in shop edits its own profile/address. */
+export async function patchMyProfile(req: Request, res: Response) {
+  const merchant = res.locals.merchant as Merchant;
+  const updated = await updateMerchantProfile(merchant.id, req.body as UpdateProfileInput);
+  res.json({ data: updated });
+}
+
+/** POST /api/merchants/me/change-password */
+export async function postChangePassword(req: Request, res: Response) {
+  const merchant = res.locals.merchant as Merchant;
+  res.json({ data: await changeMerchantPassword(merchant.id, req.body as ChangePasswordInput) });
 }
 
 /** GET /api/merchants/me/products - the signed-in merchant's own products. */

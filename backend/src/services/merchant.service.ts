@@ -6,7 +6,12 @@ import { env } from '../env.js';
 import { ApiError } from '../utils/ApiError.js';
 import { geocodePlace } from '../utils/geocode.js';
 import { sendResetEmail } from '../lib/mailer.js';
-import type { LoginInput, RegisterInput } from '../schemas/merchant.schema.js';
+import type {
+  ChangePasswordInput,
+  LoginInput,
+  RegisterInput,
+  UpdateProfileInput,
+} from '../schemas/merchant.schema.js';
 
 const sha256 = (s: string) => crypto.createHash('sha256').update(s).digest('hex');
 
@@ -75,9 +80,65 @@ export async function listMerchants() {
     kodePos: m.kodePos,
     phone: m.phone,
     landmark: m.landmark,
+    lat: m.lat,
+    lng: m.lng,
     productCount: m._count.products,
     createdAt: m.createdAt,
   }));
+}
+
+/**
+ * Updates a merchant's own profile. Re-geocodes when the address (kecamatan/
+ * kota/kabupaten) changed, so the shop's products stay correctly placed on the map.
+ */
+export async function updateMerchantProfile(merchantId: number, input: UpdateProfileInput) {
+  const current = await prisma.merchant.findUnique({ where: { id: merchantId } });
+  if (!current) throw ApiError.notFound('Akun toko tidak ditemukan.');
+
+  const addressChanged =
+    (input.kecamatan && input.kecamatan !== current.kecamatan) ||
+    (input.kota !== undefined && input.kota !== current.kota) ||
+    (input.kabupaten !== undefined && input.kabupaten !== current.kabupaten);
+
+  let lat = current.lat;
+  let lng = current.lng;
+  if (addressChanged) {
+    const area = [
+      input.kecamatan ?? current.kecamatan,
+      input.kota ?? input.kabupaten ?? current.kota ?? current.kabupaten,
+      'Indonesia',
+    ]
+      .filter(Boolean)
+      .join(', ');
+    const geo = await geocodePlace(area);
+    lat = geo?.lat ?? null;
+    lng = geo?.lng ?? null;
+  }
+
+  const merchant = await prisma.merchant.update({
+    where: { id: merchantId },
+    data: { ...input, lat, lng },
+  });
+  return toPublic(merchant);
+}
+
+/** Changes a merchant's password after verifying the current one. */
+export async function changeMerchantPassword(merchantId: number, input: ChangePasswordInput) {
+  const merchant = await prisma.merchant.findUnique({ where: { id: merchantId } });
+  if (!merchant || !(await bcrypt.compare(input.currentPassword, merchant.password))) {
+    throw ApiError.unauthorized('Kata sandi saat ini salah.');
+  }
+  const password = await bcrypt.hash(input.newPassword, 10);
+  await prisma.merchant.update({ where: { id: merchantId }, data: { password } });
+  return { ok: true };
+}
+
+/** Admin: permanently removes a shop and its products (cascade). */
+export async function deleteMerchant(id: number) {
+  const merchant = await prisma.merchant.findUnique({ where: { id } });
+  if (!merchant) throw ApiError.notFound('Toko tidak ditemukan.');
+  await prisma.merchant.delete({ where: { id } });
+  return { id };
 }
 
 /** Verifies credentials with a constant-time bcrypt compare. */

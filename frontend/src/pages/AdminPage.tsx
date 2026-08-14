@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   Boxes,
   Check,
@@ -8,11 +8,13 @@ import {
   LocateFixed,
   LogOut,
   MapPin,
+  MapPinOff,
   PackageX,
   Search,
   ShieldCheck,
   ShoppingBag,
   Store,
+  Trash2,
   X,
 } from 'lucide-react';
 import Navbar from '@/components/Navbar';
@@ -77,7 +79,9 @@ function Dashboard() {
   const [q, setQ] = useState('');
   const [region, setRegion] = useState('');
   const [showMerchants, setShowMerchants] = useState(false);
+  const [merchantQ, setMerchantQ] = useState('');
   const needle = q.trim().toLowerCase();
+  const queryClient = useQueryClient();
 
   // Registered self-service shops (kept in sync with the merchant sign-up flow).
   const { data: merchants = [] } = useQuery({
@@ -85,6 +89,20 @@ function Dashboard() {
     queryFn: () => api.listMerchants(email),
     enabled: !!email,
   });
+  const merchantNeedle = merchantQ.trim().toLowerCase();
+  const visibleMerchants = merchants.filter((m) =>
+    `${m.shopName} ${m.ownerName} ${m.kecamatan}`.toLowerCase().includes(merchantNeedle),
+  );
+
+  const removeMerchant = async (id: number, shopName: string) => {
+    if (!window.confirm(`Hapus toko "${shopName}"? Semua produknya ikut terhapus.`)) return;
+    try {
+      await api.deleteMerchant(email, id);
+      queryClient.invalidateQueries({ queryKey: ['admin-merchants', email] });
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Gagal menghapus toko.');
+    }
+  };
 
   // Default to the first kecamatan (never show all at once by default).
   useEffect(() => {
@@ -252,30 +270,69 @@ function Dashboard() {
           <span className="text-xs text-slate-400">{showMerchants ? 'Sembunyikan' : 'Lihat'}</span>
         </button>
         {showMerchants && (
-          <div className="max-h-60 overflow-y-auto border-t border-slate-100 p-2 custom-scrollbar dark:border-slate-700">
-            {merchants.length === 0 ? (
-              <p className="p-3 text-center text-xs text-slate-400">Belum ada toko yang mendaftar.</p>
-            ) : (
-              <div className="space-y-1.5">
-                {merchants.map((m) => (
-                  <div
-                    key={m.id}
-                    className="rounded-lg border border-slate-100 p-2 text-xs dark:border-slate-700"
-                  >
-                    <div className="flex items-center justify-between gap-2">
-                      <span className="font-bold">{m.shopName}</span>
-                      <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400">
-                        {m.productCount} produk
-                      </span>
-                    </div>
-                    <p className="text-[11px] text-slate-500 dark:text-slate-400">
-                      {m.ownerName} · {m.kecamatan}
-                      {m.kota ? `, ${m.kota}` : ''} · {m.phone || 'tanpa nomor'}
-                    </p>
-                  </div>
-                ))}
+          <div className="border-t border-slate-100 dark:border-slate-700">
+            <div className="p-2">
+              <div className="relative">
+                <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                <input
+                  value={merchantQ}
+                  onChange={(e) => setMerchantQ(e.target.value)}
+                  placeholder="Cari toko / pemilik / kecamatan..."
+                  className="w-full rounded-lg border border-slate-200 bg-slate-50 py-1.5 pl-8 pr-3 text-xs focus:border-brand focus:outline-none focus:ring-2 focus:ring-orange-200 dark:border-slate-600 dark:bg-slate-700/60"
+                />
               </div>
-            )}
+            </div>
+            <div className="max-h-60 overflow-y-auto px-2 pb-2 custom-scrollbar">
+              {visibleMerchants.length === 0 ? (
+                <p className="p-3 text-center text-xs text-slate-400">
+                  {merchants.length === 0 ? 'Belum ada toko yang mendaftar.' : 'Tidak ditemukan.'}
+                </p>
+              ) : (
+                <div className="space-y-1.5">
+                  {visibleMerchants.map((m) => (
+                    <div
+                      key={m.id}
+                      className="rounded-lg border border-slate-100 p-2 text-xs dark:border-slate-700"
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="font-bold">{m.shopName}</span>
+                        <div className="flex shrink-0 items-center gap-1">
+                          <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400">
+                            {m.productCount} produk
+                          </span>
+                          {m.lat != null && m.lng != null ? (
+                            <span
+                              title={`Lokasi: ${m.lat.toFixed(4)}, ${m.lng.toFixed(4)}`}
+                              className="flex items-center gap-0.5 rounded-full bg-sky-100 px-1.5 py-0.5 text-[10px] font-bold text-sky-700 dark:bg-sky-900/40 dark:text-sky-400"
+                            >
+                              <MapPin size={9} /> OK
+                            </span>
+                          ) : (
+                            <span
+                              title="Alamat belum berhasil dipetakan"
+                              className="flex items-center gap-0.5 rounded-full bg-amber-100 px-1.5 py-0.5 text-[10px] font-bold text-amber-700 dark:bg-amber-900/40 dark:text-amber-400"
+                            >
+                              <MapPinOff size={9} /> N/A
+                            </span>
+                          )}
+                          <button
+                            onClick={() => removeMerchant(m.id, m.shopName)}
+                            title="Hapus toko ini"
+                            className="press rounded-full bg-red-50 p-1 text-red-600 hover:bg-red-100 dark:bg-red-900/20 dark:text-red-400"
+                          >
+                            <Trash2 size={11} />
+                          </button>
+                        </div>
+                      </div>
+                      <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                        {m.ownerName} · {m.kecamatan}
+                        {m.kota ? `, ${m.kota}` : ''} · {m.phone || 'tanpa nomor'}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         )}
       </div>

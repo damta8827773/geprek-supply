@@ -1,6 +1,7 @@
 import type {
   AdminRegionGroup,
   Merchant,
+  MerchantProfileInput,
   MerchantSummary,
   NearbyResult,
   Product,
@@ -88,6 +89,29 @@ export const api = {
     request<{ ok: boolean }>('/merchants/reset-password', {
       method: 'POST',
       body: JSON.stringify({ email, token, password }),
+    }),
+
+  updateMyProfile: (token: string, payload: MerchantProfileInput) =>
+    request<Merchant>('/merchants/me', {
+      method: 'PATCH',
+      headers: { 'x-merchant-token': token },
+      body: JSON.stringify(payload),
+    }),
+
+  changeMyPassword: (token: string, currentPassword: string, newPassword: string) =>
+    request<{ ok: boolean }>('/merchants/me/change-password', {
+      method: 'POST',
+      headers: { 'x-merchant-token': token },
+      body: JSON.stringify({ currentPassword, newPassword }),
+    }),
+
+  deleteMerchant: (adminEmail: string, id: number) =>
+    request<{ id: number }>(`/merchants/${id}`, {
+      method: 'DELETE',
+      headers: {
+        'x-admin-email': adminEmail,
+        ...(ADMIN_TOKEN ? { 'x-admin-token': ADMIN_TOKEN } : {}),
+      },
     }),
 
   // --- Merchant product management (authenticated by the session token) ---

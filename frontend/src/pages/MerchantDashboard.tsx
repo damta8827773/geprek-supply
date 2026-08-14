@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { Check, ImagePlus, Package, Pencil, Store, Trash2, X } from 'lucide-react';
 import Navbar from '@/components/Navbar';
+import MerchantSettings from '@/components/MerchantSettings';
 import { api } from '@/lib/api';
 import { fileToDataUrl } from '@/lib/image';
 import { formatRupiah } from '@/lib/format';
@@ -116,6 +117,8 @@ export default function MerchantDashboard() {
             </p>
           </div>
         </div>
+
+        <MerchantSettings />
 
         {/* Add / edit form */}
         <form

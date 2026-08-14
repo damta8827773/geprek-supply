@@ -18,7 +18,10 @@ export const useMerchantStore = create<MerchantState>()(
       token: null,
       setMerchant: (m) => {
         const { token, ...merchant } = m;
-        set({ merchant: merchant as Merchant, token: token ?? null });
+        // Only overwrite the session token when a new one is actually returned
+        // (login/register/google); profile-update responses carry no token and
+        // must not wipe out the existing session.
+        set((s) => ({ merchant: merchant as Merchant, token: token ?? s.token }));
       },
       logout: () => set({ merchant: null, token: null }),
     }),

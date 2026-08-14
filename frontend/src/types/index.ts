@@ -102,6 +102,17 @@ export interface RegisterPayload {
   landmark?: string;
 }
 
+/** Fields a signed-in merchant may edit on their own profile. */
+export interface MerchantProfileInput {
+  ownerName?: string;
+  kecamatan?: string;
+  kota?: string;
+  kabupaten?: string;
+  kodePos?: string;
+  phone?: string;
+  landmark?: string;
+}
+
 /** A product managed by a registered merchant from their dashboard. */
 export interface Product {
   id: number;
@@ -137,6 +148,8 @@ export interface MerchantSummary {
   kodePos: string | null;
   phone: string | null;
   landmark: string | null;
+  lat: number | null;
+  lng: number | null;
   productCount: number;
   createdAt: string;
 }

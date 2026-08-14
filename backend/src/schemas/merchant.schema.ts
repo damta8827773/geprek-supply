@@ -37,8 +37,32 @@ export const resetSchema = z.object({
   password: z.string().min(6).max(100),
 });
 
+/** `PATCH /api/merchants/me` - shop owner edits their own profile/address. */
+export const updateProfileSchema = z.object({
+  ownerName: z.string().min(2).max(100).optional(),
+  kecamatan: z.string().min(1).max(100).optional(),
+  kota: z.string().max(100).optional(),
+  kabupaten: z.string().max(100).optional(),
+  kodePos: z.string().max(10).optional(),
+  phone: z.string().max(30).optional(),
+  landmark: z.string().max(200).optional(),
+});
+
+/** `POST /api/merchants/me/change-password` - requires the current password. */
+export const changePasswordSchema = z.object({
+  currentPassword: z.string().min(1),
+  newPassword: z.string().min(6).max(100),
+});
+
+/** `:id` path param for admin merchant management. */
+export const merchantIdParamsSchema = z.object({
+  id: z.coerce.number().int().positive(),
+});
+
 export type RegisterInput = z.infer<typeof registerSchema>;
 export type LoginInput = z.infer<typeof loginSchema>;
 export type ForgotInput = z.infer<typeof forgotSchema>;
 export type ResetInput = z.infer<typeof resetSchema>;
 export type GoogleInput = z.infer<typeof googleSchema>;
+export type UpdateProfileInput = z.infer<typeof updateProfileSchema>;
+export type ChangePasswordInput = z.infer<typeof changePasswordSchema>;
