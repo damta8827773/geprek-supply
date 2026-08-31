@@ -13,6 +13,25 @@
 
 ---
 
+## 📸 Screenshot
+
+![Halaman peta utama - kecamatan, radius, daftar pemasok, live chat, dan WhatsApp](docs/screenshots/map-page.png)
+
+*Halaman utama: peta interaktif, daftar pemasok termurah-dulu dengan foto produk asli,
+dan (kanan bawah) tombol Live Chat + WhatsApp yang selalu tersedia.*
+
+<details>
+<summary>Halaman "Cari Nasional" (pemilih Provinsi → Kota → Kecamatan)</summary>
+
+![Halaman pencarian nasional dengan pemilih wilayah bertingkat](docs/screenshots/nearby-national.png)
+
+*Diambil headless tanpa izin GPS, jadi peta & hasil belum termuat - lihat bagian
+Executive Highlights untuk contoh hasil nyata yang sudah terisi.*
+
+</details>
+
+---
+
 ## 🚀 Executive Highlights
 
 > One screen turns hours of phone calls and market trips into a sub-second decision.
@@ -26,6 +45,8 @@
 | 🔐 **Keamanan Berlapis** | Session token (SHA-256), bcrypt, faktor-kedua admin, rate-limit, audit log - diverifikasi di server. |
 | 📊 **Dashboard Real-time** | Panel admin dengan metrik langsung: pemasok, ketersediaan, toko terdaftar, produk. |
 | 🔑 **Onboarding Lengkap** | Daftar/masuk, **login Google**, reset kata sandi via email, dukungan WhatsApp 1-klik. |
+| 💬 **Live Chat + AI** | Asisten FAQ otomatis menjawab dulu; hanya tersambung ke admin saat pengunjung **memintanya** - lengkap nomor antrian, estimasi tunggu, dan notifikasi real-time ke admin. |
+| 🛡️ **Deteksi Ancaman** | Login gagal, token tidak valid, dan percobaan akses admin tercatat & terlihat di dashboard; scanner supply-chain (`npm run security:scan`) memeriksa versi paket yang diketahui berbahaya. |
 
 **Tech**: React 18 · TypeScript · Vite · Tailwind · MapLibre GL · Node.js · Express · Prisma · SQLite.
 
@@ -119,6 +140,21 @@ This repository is published as **Open Source for Educational Analysis**.
 - **🌗 Theme Switcher** - seamless Dark (neon) / Light mode, persisted locally.
 - **🌐 Bilingual (i18n)** - built-in Indonesian 🇮🇩 & English 🇬🇧 support.
 - **📱 Fully Responsive** - split map/sidebar layout that reflows for mobile.
+- **🌍 Nationwide Search** - pick any of Indonesia's ~7,285 kecamatan (cascading
+  Provinsi → Kota/Kabupaten → Kecamatan picker) or use GPS, and see real
+  shops/markets from OpenStreetMap plus any registered shop's products nearby.
+- **🏪 Self-Service Merchants** - shop owners register, manage their own products
+  (price, stock, photo), edit their profile/address (re-geocoded automatically),
+  and change their password - all from their own dashboard.
+- **💬 AI-First Live Chat** - a rule-based FAQ bot answers visitors immediately;
+  it only proposes connecting to a human, and escalation happens **only when the
+  visitor clicks the button** - never automatically. Escalated chats get a
+  permanent queue number, a live position + wait-time estimate, and the admin
+  sees a real-time notification badge. Every message carries a full Indonesian
+  date/time and sent/read receipts.
+- **🛡️ Security Event Log** - failed admin/merchant logins, invalid session
+  tokens, and duplicate-registration attempts are recorded with an IP and
+  timestamp, visible in a dedicated admin panel.
 
 ---
 
@@ -223,6 +259,14 @@ Base URL: `http://localhost:4000/api`
 | `GET` | `/regions/:key/suppliers?radius=15` | - | Suppliers within a radius (km), enriched with distance, delivery cost, and traffic-aware ETA, sorted cheapest-first. |
 | `GET` | `/suppliers` | - | Full inventory grouped by region (dashboard). |
 | `PATCH` | `/suppliers/:id` | 🔒 | Set a supplier's stock availability. |
+| `POST` | `/chat/sessions` | - | Start a new live-chat session (returns a session token). |
+| `POST` | `/chat/sessions/message` | 🔑 | Visitor sends a message; the bot replies inline. |
+| `POST` | `/chat/sessions/escalate` | 🔑 | Visitor explicitly requests a human admin (never automatic). |
+| `GET` | `/chat/admin/inbox` | 🔒 | Admin's queue of sessions needing attention. |
+| `POST` | `/chat/admin/:id/reply` | 🔒 | Admin replies in a session. |
+| `GET` | `/security/events` | 🔒 | Recent security events (failed auth, invalid tokens). |
+
+🔑 = requires the visitor's `x-chat-token` (own session only). 🔒 = requires admin auth.
 
 Admin requests must send an `x-admin-email` header matching `ADMIN_EMAIL`;
 the server returns **401** when missing and **403** when unauthorized. When
@@ -249,6 +293,19 @@ gatekeeper. Controls in place:
 | 8 | **Audit trail** | Every stock change is logged (admin email, supplier id, new status) via **Pino** for traceability. | ✅ |
 | 9 | **Error hygiene** | Central error handler returns a generic **500** and never leaks stack traces to clients. | ✅ |
 | 10 | **Secret hygiene** | `TOMTOM_API_KEY` / `ADMIN_TOKEN` live in `.env` (git-ignored); env is validated by Zod at boot. | ✅ |
+| 11 | **Merchant session tokens** | Register/login/Google issue a random 256-bit token; only its **SHA-256 hash** is stored, and product mutations require it via `x-merchant-token` - knowing a shop's email is not enough. | ✅ |
+| 12 | **Security event log** | Failed admin/merchant logins, invalid session tokens, and duplicate-registration attempts are recorded (type, detail, IP, timestamp) and reviewable in `/admin` → *Log Keamanan*. | ✅ |
+| 13 | **Supply-chain scanning** | `npm run security:scan` cross-checks `package-lock.json` against a maintained list of known-compromised package versions (e.g. the Aug 2026 `keyv`/`cacheable` incident) and runs `npm audit` for a second opinion - without needing `node_modules` installed. | ✅ |
+
+### Known findings (documented, not silently ignored)
+
+- ⚠️ `npm audit` flags 2 **moderate** advisories in `react-router` (open redirect,
+  constructor injection) whose fix requires a **major version bump (v6 → v7)**.
+  This was deliberately **not force-applied** in this pass because it can break
+  every page's routing and needs its own testing cycle - `npm audit fix --force`
+  will apply it when someone has time to verify all routes afterward. All other
+  `npm audit` findings (body-parser, esbuild, nanoid, postcss, shell-quote) were
+  fixed via a plain `npm audit fix` (no breaking changes).
 
 ### Approval status
 
@@ -279,6 +336,7 @@ server (aligned with COBIT / ISO 27002 principles).
 | `npm run db:seed` | Seed the database. |
 | `npm run db:reset` | Drop, re-migrate, and re-seed. |
 | `npm run format` | Prettier across the repo. |
+| `npm run security:scan` | Check `package-lock.json` for known-compromised package versions + `npm audit`. |
 
 ---
 
