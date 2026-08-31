@@ -29,9 +29,10 @@ export function requireAdmin(req: Request, _res: Response, next: NextFunction) {
     next(ApiError.unauthorized('Missing admin credentials'));
     return;
   }
- if (!env.adminEmails.some((allowed) => safeEqual(email, allowed))) {
-  next(ApiError.forbidden('You are not authorized'));
-}
+  if (!env.adminEmails.some((allowed) => safeEqual(email, allowed))) {
+    next(ApiError.forbidden('You are not authorized to perform this action'));
+    return;
+  }
   if (env.ADMIN_TOKEN) {
     const token = req.header('x-admin-token') ?? '';
     if (!safeEqual(token, env.ADMIN_TOKEN)) {
