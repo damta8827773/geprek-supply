@@ -71,6 +71,52 @@ model Merchant {
   updatedAt    DateTime  @updatedAt
 }
 
+/// A live-chat conversation with a visitor. The AI bot answers first; a human
+/// admin only joins when the visitor explicitly asks to be connected (never
+/// auto-escalated). clientToken is the sha256 of the raw token stored in the
+/// visitor's browser, so only that browser can read/write this session.
+model ChatSession {
+  id          Int           @id @default(autoincrement())
+  clientToken String        @unique
+  name        String? // optional guest display name
+  status      String        @default("BOT") // BOT | QUEUED | WITH_ADMIN | CLOSED
+  queueNumber Int? // fixed ticket number, assigned once when escalated
+  escalatedAt DateTime?
+  closedAt    DateTime?
+  messages    ChatMessage[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@index([status])
+}
+
+/// One message in a ChatSession. readAt marks when the OTHER side saw it
+/// (read receipt); sender distinguishes the visitor, the bot, and the admin.
+model ChatMessage {
+  id        Int         @id @default(autoincrement())
+  session   ChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  sessionId Int
+  sender    String // USER | BOT | ADMIN
+  text      String
+  readAt    DateTime?
+  createdAt DateTime    @default(now())
+
+  @@index([sessionId])
+}
+
+/// A security-relevant event (failed auth, invalid session token, etc.),
+/// recorded so the admin can see who is probing the system for weaknesses.
+model SecurityEvent {
+  id        Int      @id @default(autoincrement())
+  type      String // ADMIN_AUTH_FAIL | MERCHANT_LOGIN_FAIL | MERCHANT_TOKEN_INVALID | ...
+  detail    String
+  ip        String?
+  createdAt DateTime @default(now())
+
+  @@index([type])
+  @@index([createdAt])
+}
+
 /// A product a registered merchant sells (managed from their own dashboard).
 model Product {
   id         Int      @id @default(autoincrement())

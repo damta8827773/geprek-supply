@@ -22,7 +22,8 @@
     "db:seed": "npm run db:seed --workspace backend",
     "db:reset": "npm run db:reset --workspace backend",
     "lint": "npm run lint --workspaces --if-present",
-    "format": "prettier --write \"**/*.{ts,tsx,js,json,md,css}\""
+    "format": "prettier --write \"**/*.{ts,tsx,js,json,md,css}\"",
+    "security:scan": "node security/security-scan.mjs"
   },
   "devDependencies": {
     "concurrently": "^9.1.0",

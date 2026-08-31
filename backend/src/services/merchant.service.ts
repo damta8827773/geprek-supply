@@ -1,11 +1,13 @@
 import crypto from 'node:crypto';
 import bcrypt from 'bcryptjs';
 import type { Merchant } from '@prisma/client';
+import type { Request } from 'express';
 import { prisma } from '../lib/prisma.js';
 import { env } from '../env.js';
 import { ApiError } from '../utils/ApiError.js';
 import { geocodePlace } from '../utils/geocode.js';
 import { sendResetEmail } from '../lib/mailer.js';
+import { logSecurityEvent } from '../lib/security.js';
 import type {
   ChangePasswordInput,
   LoginInput,
@@ -39,7 +41,7 @@ async function issueSession(merchantId: number): Promise<string> {
  * Registers a shop. Email and shopName are unique so one record is always
  * found directly (no duplicate names) - the caller gets a clear 409 on clash.
  */
-export async function registerMerchant(input: RegisterInput) {
+export async function registerMerchant(input: RegisterInput, req?: Request) {
   const email = input.email.trim().toLowerCase();
   const shopName = input.shopName.trim();
 
@@ -47,8 +49,14 @@ export async function registerMerchant(input: RegisterInput) {
     prisma.merchant.findUnique({ where: { email } }),
     prisma.merchant.findUnique({ where: { shopName } }),
   ]);
-  if (emailTaken) throw ApiError.conflict('Email sudah terdaftar.');
-  if (shopTaken) throw ApiError.conflict('Nama toko sudah dipakai, pilih nama lain.');
+  if (emailTaken) {
+    logSecurityEvent('MERCHANT_REGISTER_CONFLICT', `Duplicate email attempted: ${email}`, req);
+    throw ApiError.conflict('Email sudah terdaftar.');
+  }
+  if (shopTaken) {
+    logSecurityEvent('MERCHANT_REGISTER_CONFLICT', `Duplicate shop name attempted: ${shopName}`, req);
+    throw ApiError.conflict('Nama toko sudah dipakai, pilih nama lain.');
+  }
 
   const password = await bcrypt.hash(input.password, 10);
   // Best-effort geocode so the shop's products can appear on the map.
@@ -142,10 +150,11 @@ export async function deleteMerchant(id: number) {
 }
 
 /** Verifies credentials with a constant-time bcrypt compare. */
-export async function loginMerchant(input: LoginInput) {
+export async function loginMerchant(input: LoginInput, req?: Request) {
   const email = input.email.trim().toLowerCase();
   const merchant = await prisma.merchant.findUnique({ where: { email } });
   if (!merchant || !(await bcrypt.compare(input.password, merchant.password))) {
+    logSecurityEvent('MERCHANT_LOGIN_FAIL', `Failed login attempt for: ${email}`, req);
     throw ApiError.unauthorized('Email atau kata sandi salah.');
   }
   const token = await issueSession(merchant.id);

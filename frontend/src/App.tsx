@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { useUiStore } from '@/store/uiStore';
 import FloatingWA from '@/components/FloatingWA';
+import LiveChatWidget from '@/components/LiveChatWidget';
 import MapPage from '@/pages/MapPage';
 import NearbyPage from '@/pages/NearbyPage';
 import RegisterPage from '@/pages/RegisterPage';
@@ -49,8 +50,13 @@ export default function App() {
         <Route path="/admin" element={<AdminPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
-      {/* Floating WhatsApp contact bubble on every public page (hidden on the admin dashboard). */}
-      {!pathname.startsWith('/admin') && <FloatingWA />}
+      {/* Floating live-chat + WhatsApp contact bubbles on every public page (hidden on admin). */}
+      {!pathname.startsWith('/admin') && (
+        <>
+          <LiveChatWidget />
+          <FloatingWA />
+        </>
+      )}
     </>
   );
 }

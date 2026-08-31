@@ -1,5 +1,8 @@
 import type {
   AdminRegionGroup,
+  ChatInboxEntry,
+  ChatMessage,
+  ChatSessionState,
   Merchant,
   MerchantProfileInput,
   MerchantSummary,
@@ -9,6 +12,7 @@ import type {
   Region,
   RegionSuppliersResponse,
   RegisterPayload,
+  SecurityEvent,
   Supplier,
 } from '@/types';
 
@@ -154,5 +158,81 @@ export const api = {
         ...(ADMIN_TOKEN ? { 'x-admin-token': ADMIN_TOKEN } : {}),
       },
       body: JSON.stringify({ inStock }),
+    }),
+
+  // --- Live chat: visitor side (session-token gated) ---
+  startChat: (name?: string) =>
+    request<{ sessionId: number; token: string; status: string; messages: ChatMessage[] }>(
+      '/chat/sessions',
+      { method: 'POST', body: JSON.stringify({ name }) },
+    ),
+
+  getMyChat: (token: string) =>
+    request<ChatSessionState>('/chat/sessions/me', { headers: { 'x-chat-token': token } }),
+
+  sendChatMessage: (token: string, text: string) =>
+    request<{ messages: ChatMessage[]; suggestEscalate: boolean }>('/chat/sessions/message', {
+      method: 'POST',
+      headers: { 'x-chat-token': token },
+      body: JSON.stringify({ text }),
+    }),
+
+  escalateChat: (token: string) =>
+    request<{ status: string; queueNumber: number | null; queue: ChatSessionState['queue'] }>(
+      '/chat/sessions/escalate',
+      { method: 'POST', headers: { 'x-chat-token': token } },
+    ),
+
+  // --- Live chat: admin side ---
+  getChatQueueCount: (adminEmail: string) =>
+    request<{ count: number }>('/chat/admin/queue-count', {
+      headers: {
+        'x-admin-email': adminEmail,
+        ...(ADMIN_TOKEN ? { 'x-admin-token': ADMIN_TOKEN } : {}),
+      },
+    }),
+
+  getChatInbox: (adminEmail: string) =>
+    request<ChatInboxEntry[]>('/chat/admin/inbox', {
+      headers: {
+        'x-admin-email': adminEmail,
+        ...(ADMIN_TOKEN ? { 'x-admin-token': ADMIN_TOKEN } : {}),
+      },
+    }),
+
+  getChatSessionAdmin: (adminEmail: string, id: number) =>
+    request<ChatMessage[]>(`/chat/admin/${id}`, {
+      headers: {
+        'x-admin-email': adminEmail,
+        ...(ADMIN_TOKEN ? { 'x-admin-token': ADMIN_TOKEN } : {}),
+      },
+    }),
+
+  replyChatSession: (adminEmail: string, id: number, text: string) =>
+    request<ChatMessage>(`/chat/admin/${id}/reply`, {
+      method: 'POST',
+      headers: {
+        'x-admin-email': adminEmail,
+        ...(ADMIN_TOKEN ? { 'x-admin-token': ADMIN_TOKEN } : {}),
+      },
+      body: JSON.stringify({ text }),
+    }),
+
+  closeChatSession: (adminEmail: string, id: number) =>
+    request<{ id: number }>(`/chat/admin/${id}/close`, {
+      method: 'POST',
+      headers: {
+        'x-admin-email': adminEmail,
+        ...(ADMIN_TOKEN ? { 'x-admin-token': ADMIN_TOKEN } : {}),
+      },
+    }),
+
+  // --- Security events (admin only) ---
+  getSecurityEvents: (adminEmail: string) =>
+    request<SecurityEvent[]>('/security/events', {
+      headers: {
+        'x-admin-email': adminEmail,
+        ...(ADMIN_TOKEN ? { 'x-admin-token': ADMIN_TOKEN } : {}),
+      },
     }),
 };

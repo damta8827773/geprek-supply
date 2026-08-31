@@ -19,6 +19,8 @@ import {
 } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import { AuroraBackground } from '@/components/ui/aurora-background';
+import AdminLiveChat from '@/components/AdminLiveChat';
+import AdminSecurityLog from '@/components/AdminSecurityLog';
 import { api } from '@/lib/api';
 import { useAllSuppliers, useSetStock } from '@/hooks/useSuppliers';
 import { useAdminStore } from '@/store/adminStore';
@@ -82,6 +84,14 @@ function Dashboard() {
   const [merchantQ, setMerchantQ] = useState('');
   const needle = q.trim().toLowerCase();
   const queryClient = useQueryClient();
+
+  // Lightweight poll for the header notification badge (visitors waiting for a human).
+  const { data: chatQueue } = useQuery({
+    queryKey: ['admin-chat-queue-count', email],
+    queryFn: () => api.getChatQueueCount(email),
+    enabled: !!email,
+    refetchInterval: 5000,
+  });
 
   // Registered self-service shops (kept in sync with the merchant sign-up flow).
   const { data: merchants = [] } = useQuery({
@@ -162,6 +172,11 @@ function Dashboard() {
             <span className="flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400">
               <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" /> LIVE
             </span>
+            {!!chatQueue?.count && (
+              <span className="flex items-center gap-1 rounded-full bg-red-500 px-2 py-0.5 text-[10px] font-bold text-white">
+                <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-white" /> {chatQueue.count} CS menunggu
+              </span>
+            )}
           </div>
           <p className="text-sm text-slate-500 dark:text-slate-400">{t.stockMgmtSub}</p>
         </div>
@@ -257,6 +272,9 @@ function Dashboard() {
           <LocateFixed size={15} /> Kecamatan Saya
         </button>
       </div>
+
+      <AdminLiveChat email={email} />
+      <AdminSecurityLog email={email} />
 
       {/* Registered self-service shops */}
       <div className="mb-3 rounded-xl border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800">

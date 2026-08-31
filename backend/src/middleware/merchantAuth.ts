@@ -2,6 +2,7 @@ import crypto from 'node:crypto';
 import type { NextFunction, Request, Response } from 'express';
 import { prisma } from '../lib/prisma.js';
 import { ApiError } from '../utils/ApiError.js';
+import { logSecurityEvent } from '../lib/security.js';
 
 const sha256 = (s: string) => crypto.createHash('sha256').update(s).digest('hex');
 
@@ -18,7 +19,10 @@ export async function requireMerchant(req: Request, res: Response, next: NextFun
     const merchant = await prisma.merchant.findFirst({
       where: { sessionToken: sha256(token) },
     });
-    if (!merchant) throw ApiError.unauthorized('Sesi tidak valid. Silakan masuk ulang.');
+    if (!merchant) {
+      logSecurityEvent('MERCHANT_TOKEN_INVALID', 'Unrecognized merchant session token presented', req);
+      throw ApiError.unauthorized('Sesi tidak valid. Silakan masuk ulang.');
+    }
     res.locals.merchant = merchant;
     next();
   } catch (err) {

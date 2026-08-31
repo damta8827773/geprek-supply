@@ -1,0 +1,21 @@
+{
+  "_comment": "Registry of packages/versions known to be compromised in supply-chain incidents. Add an entry whenever a new incident is disclosed - the scan script checks package-lock.json against this list without needing node_modules installed.",
+  "advisories": [
+    {
+      "id": "npm-keyv-cacheable-2026-08",
+      "description": "August 2026 npm supply-chain compromise of the keyv/cacheable package family.",
+      "packages": {
+        "keyv": { "badVersions": ["6.0.0"], "safeAt": "5.6.0" },
+        "cacheable": { "badVersions": [], "safeAt": null },
+        "cacheable-request": { "badVersions": [], "safeAt": "13.0.19" },
+        "flat-cache": { "badVersions": [], "safeAt": "6.1.23" },
+        "file-entry-cache": { "badVersions": [], "safeAt": null },
+        "cache-manager": { "badVersions": [], "safeAt": "7.2.9" },
+        "@cacheable/utils": { "badVersions": [], "safeAt": null },
+        "@cacheable/net": { "badVersions": [], "safeAt": null },
+        "@cacheable/node-cache": { "badVersions": [], "safeAt": null },
+        "@cacheable/memory": { "badVersions": [], "safeAt": null }
+      }
+    }
+  ]
+}

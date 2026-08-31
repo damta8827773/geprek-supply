@@ -2,6 +2,7 @@ import { timingSafeEqual } from 'node:crypto';
 import type { NextFunction, Request, Response } from 'express';
 import { env } from '../env.js';
 import { ApiError } from '../utils/ApiError.js';
+import { logSecurityEvent } from '../lib/security.js';
 
 /** Constant-time string comparison - avoids leaking secrets via timing. */
 function safeEqual(a: string, b: string): boolean {
@@ -26,16 +27,19 @@ function safeEqual(a: string, b: string): boolean {
 export function requireAdmin(req: Request, _res: Response, next: NextFunction) {
   const email = req.header('x-admin-email')?.trim().toLowerCase();
   if (!email) {
+    logSecurityEvent('ADMIN_AUTH_FAIL', 'Missing x-admin-email header', req);
     next(ApiError.unauthorized('Missing admin credentials'));
     return;
   }
   if (!env.adminEmails.some((allowed) => safeEqual(email, allowed))) {
+    logSecurityEvent('ADMIN_AUTH_FAIL', `Unauthorized email attempted: ${email}`, req);
     next(ApiError.forbidden('You are not authorized to perform this action'));
     return;
   }
   if (env.ADMIN_TOKEN) {
     const token = req.header('x-admin-token') ?? '';
     if (!safeEqual(token, env.ADMIN_TOKEN)) {
+      logSecurityEvent('ADMIN_AUTH_FAIL', `Invalid admin token for ${email}`, req);
       next(ApiError.unauthorized('Invalid or missing admin token'));
       return;
     }

@@ -154,6 +154,52 @@ export interface MerchantSummary {
   createdAt: string;
 }
 
+export type ChatSender = 'USER' | 'BOT' | 'ADMIN';
+export type ChatStatus = 'BOT' | 'QUEUED' | 'WITH_ADMIN' | 'CLOSED';
+
+export interface ChatMessage {
+  id: number;
+  sessionId: number;
+  sender: ChatSender;
+  text: string;
+  readAt: string | null;
+  createdAt: string;
+}
+
+export interface ChatQueueInfo {
+  queueNumber: number | null;
+  position: number;
+  estimatedMinutes: number;
+}
+
+export interface ChatSessionState {
+  status: ChatStatus;
+  queueNumber: number | null;
+  queue: ChatQueueInfo | null;
+  messages: ChatMessage[];
+}
+
+export interface ChatInboxEntry {
+  id: number;
+  name: string | null;
+  status: ChatStatus;
+  queueNumber: number | null;
+  position: number | null;
+  lastMessage: string | null;
+  lastMessageAt: string;
+  unreadFromUser: number;
+  createdAt: string;
+  escalatedAt: string | null;
+}
+
+export interface SecurityEvent {
+  id: number;
+  type: string;
+  detail: string;
+  ip: string | null;
+  createdAt: string;
+}
+
 export interface AdminSupplier {
   id: number;
   name: string;
